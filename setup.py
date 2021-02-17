@@ -1,3 +1,4 @@
+#!/usr/bin/env python 3
 from distutils.core import setup
 
 setup(
@@ -6,13 +7,10 @@ setup(
     author='c2python-coding',
     author_email='c2python.coding@protonmail.com',
     packages=['jtool'],
-    scripts=['bin/stowe-towels.py','bin/wash-towels.py'],
-    url='http://pypi.python.org/pypi/TowelStuff/',
-    license='LICENSE.txt',
-    description='Useful towel-related stuff.',
-    long_description=open('README.txt').read(),
-    install_requires=[
-        "Django >= 1.1.1",
-        "caldav == 0.1.4",
-    ],
+    url='https://github.com/c2python-coding/Jtool',
+    description='Tool for working with json data',
+    long_description=open('README.md').read(),
+    entry_points={
+        'console_scripts': ['jtool=jtool:run'],
+    }
 )
