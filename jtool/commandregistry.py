@@ -1,4 +1,6 @@
-from .helpers import type_assert, membership_assert, re_assert
+from .helpers import type_check, membership_check
+from .utils import print_debug, assert_with_data, raise_error
+import re
 
 CUSTOM_COMMANDS = {}
 COMMAND_HELP_LIST = []
@@ -8,7 +10,7 @@ DEFAULT_COMMANDS = {}
 # DEFAULT COMMANDS--------
 
 def KEY_SELECTOR(token):
-    return lambda data, tkn=token: type_assert(data, dict)[membership_assert(tkn, data)]
+    return lambda data, tkn=token: type_check(data, dict)[membership_check(tkn, data)]
 
 
 COMMAND_HELP_LIST.append(
@@ -29,10 +31,10 @@ MULTI_KEY_OPERATOR = "{}"
 
 
 def MULTI_KEY_SELECT_OPERATION(token):
-    re_assert(token, r"\{[\w,]+\}",
-              "multi key command must be in form {key1, key2 ...}")
+    assert_with_data(re.search(r"\{[\w,]+\}", token), token,
+                     "multi key command must be in form {key1, key2 ...}")
     processed_keys = [key.strip() for key in token.strip("{}").split(",")]
-    return lambda data, keyset=processed_keys: {membership_assert(key, type_assert(data, dict)): data[key] for key in keyset}
+    return lambda data, keyset=processed_keys: {membership_check(key, type_check(data, dict)): data[key] for key in keyset}
 
 
 DEFAULT_COMMANDS[MULTI_KEY_OPERATOR[0]
@@ -46,24 +48,27 @@ ARRAY_OPERATOR = "[]"
 
 
 def ARRAY_SELECT_OPERATION(token):
-    re_assert(token, r"\[[0-9,-]+\]",
-              "range specifier must be in form [0,1,2-3...]")
+    assert_with_data(re.search(r"\[[0-9,-]+\]", token), token,
+                     "range specifier must be in form [0,1,2-3...]")
     rangestring = token.strip("[]")
     indicies = []
     crange = rangestring.split(",")
     for elem in crange:
-        if "-" in elem:
-            rangevals = elem.split("-")
-            lval = int(rangevals[0].strip())
-            rval = int(rangevals[1].strip())
-            indicies += list(range(lval, rval+1))
-        else:
-            indicies.append(int(elem.strip()))
+        try:
+            if "-" in elem:
+                rangevals = elem.split("-")
+                lval = int(rangevals[0].strip())
+                rval = int(rangevals[1].strip())
+                indicies += list(range(lval, rval+1))
+            else:
+                indicies.append(int(elem.strip()))
+        except Exception:
+            raise_error(token, "invalid array selection specifier")
     if len(indicies) == 1:
         tidx = indicies[0]
-        return lambda data, idx=tidx: type_assert(data, list)[idx]
+        return lambda data, idx=tidx: type_check(data, list)[idx]
     else:
-        return lambda data, idxes=indicies: [type_assert(data, list)[i] for i in idxes]
+        return lambda data, idxes=indicies: [type_check(data, list)[i] for i in idxes]
 
 
 DEFAULT_COMMANDS[ARRAY_OPERATOR[0]
@@ -75,12 +80,32 @@ COMMAND_HELP_LIST.append(
 
 
 ITER_OPERATOR = "*"
-def ITER_CHECK(val): type_assert(val, list)
 
 
-DEFAULT_COMMANDS[ITER_OPERATOR] = lambda _: ITER_CHECK
+def ITER_CHECK(val): return type_check(val, list)
+
+def ITER_OPERATION(token):
+    assert_with_data(len(token)==1, token,
+                     "iteration operator sequencemust be in the form of '*.command_to_iterate'")
+    return ITER_CHECK
+
+
+DEFAULT_COMMANDS[ITER_OPERATOR] = lambda token: ITER_OPERATION(token)
 COMMAND_HELP_LIST.append(
     ITER_OPERATOR + " : applies the next command iteratively on items in a list")
+
+# --------------------
+
+
+def register_command(opname):
+    ''' decorator for registering custom commands'''
+    def identity_dec(func, operation=opname):
+        CUSTOM_COMMANDS[operation] = func
+        assert_with_data(func.__doc__, func,
+                         "no description defined for custom function")
+        COMMAND_HELP_LIST.append("@" + opname + " : " + func.__doc__)
+        return func
+    return identity_dec
 
 # --------------------
 
@@ -92,17 +117,9 @@ def is_iter_operation(op, subval):
     return False
 
 
-def register_command(opname):
-    ''' decorator for registering custom commands'''
-    def identity_dec(func):
-        CUSTOM_COMMANDS[opname] = func
-        COMMAND_HELP_LIST.append("@" + opname + " : " + func.__doc__)
-        return func
-    return identity_dec
-
-
 def split_function_token(fulltoken):
-    assert fulltoken[0] == "@", "function token must start with @"
+    assert_with_data(fulltoken[0] == "@", fulltoken,
+                     "function token must start with @")
     if fulltoken[-1] == ")":
         fulltoken = fulltoken[:-1]
         splitstr = fulltoken.split("(")
@@ -123,10 +140,16 @@ def get_operation_lambda(token, escaped=False):
         if token[0] == "@":
             (tknname, params) = split_function_token(token)
             if tknname in CUSTOM_COMMANDS:
-                t_callable = CUSTOM_COMMANDS[tknname](params)
-                assert callable(t_callable), "Returned operation must be a callable (function or lambda)"
+                try:
+                    t_callable = CUSTOM_COMMANDS[tknname](
+                        params) if params else CUSTOM_COMMANDS[tknname]()
+                except TypeError as e:
+                    raise_error(token, str(e))
+                assert_with_data(callable(
+                    t_callable), t_callable, "Returned operation must be a callable (function or lambda)")
+                return t_callable
             else:
-                raise AssertionError(
-                    tknname + "not a valid command (if you are trying to reference a key, escape it with ' or \" )")
+                raise_error(
+                    token, "not a valid command (if you are trying to reference a key, escape it with ' or \" )")
         else:
             return KEY_SELECTOR(token)

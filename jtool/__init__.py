@@ -1,12 +1,11 @@
 import sys
-sys.dont_write_bytecode=True
 import json
 import argparse
 from argparse import RawTextHelpFormatter
 from . import commandregistry
 from . import customcommands
 from .processing import selectfrom
-from .debuglogging import enable_debug
+from .utils import enable_debug
 
 
 _INITIAL_HELP_STR = """A tool for selecting json fields. Accepts a file or stdin as input

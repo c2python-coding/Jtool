@@ -1,19 +1,13 @@
-import re
+from .utils import raise_error, json2shortstr
 
 
-def type_assert(data, ttype):
+def type_check(data, ttype):
     if isinstance(data, ttype):
         return data
-    raise AssertionError("selection is not of " + str(ttype))
+    raise_error(json2shortstr(data), "selection is not of " + str(ttype))
 
 
-def generic_assert(data, chklambda, message):
-    if chklambda(data):
-        return data
-    raise AssertionError(message)
-
-
-def membership_assert(item, collection):
+def membership_check(item, collection):
     if item in collection:
         return item
     collection_str = "collection"
@@ -21,11 +15,5 @@ def membership_assert(item, collection):
         collection_str = "list"
     if isinstance(collection, dict):
         collection_str = "dict"
-    raise AssertionError(str(item) + " not in " + collection_str)
-
-
-def re_assert(data, regexp, message):
-    if re.search(regexp, data):
-        return data
-    raise AssertionError(message)
-
+    e_message = str(item) + " not in " + collection_str
+    raise_error(json2shortstr(collection), e_message)
