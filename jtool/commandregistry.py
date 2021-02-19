@@ -16,15 +16,6 @@ def KEY_SELECTOR(token):
 COMMAND_HELP_LIST.append(
     "key : selects the particular key from the given top level json")
 
-# --------------------
-
-IDENT_OPERATOR = "-"
-def IDENT_FUN(val): return val
-
-
-DEFAULT_COMMANDS[IDENT_OPERATOR] = lambda _: IDENT_FUN
-COMMAND_HELP_LIST.append(
-    IDENT_OPERATOR + " : identity operator (returns the current selection without modification)")
 
 # --------------------
 MULTI_KEY_OPERATOR = "{}"
@@ -84,8 +75,9 @@ ITER_OPERATOR = "*"
 
 def ITER_CHECK(val): return type_check(val, list)
 
+
 def ITER_OPERATION(token):
-    assert_with_data(len(token)==1, token,
+    assert_with_data(len(token) == 1, token,
                      "iteration operator sequencemust be in the form of '*.command_to_iterate'")
     return ITER_CHECK
 

@@ -9,6 +9,8 @@ Custom Commands
 
 See README.md for explanation
 '''
+
+
 @register_command("keys")
 def make_KEYS_op():
     '''returns the keys at the top level'''
@@ -48,9 +50,9 @@ def make_TYPE_op():
 @register_command("refilter")
 def make_FILTER_op(params):
     '''regexp filter on list based on the syntax (selector=>regular_expression)'''
-    assert_with_data("=>" in params, params, "regexp filter must be in fhe form of selector=>regular_expression")
+    assert_with_data("=>" in params, params,
+                     "regexp filter must be in fhe form of selector=>regular_expression")
     fsplit = params.split("=>")
     selector = fsplit[0]
     restr = fsplit[1]
-    return lambda data, slct=selector, regexp=restr: data if re.search(restr, str(selectfrom(data, slct))) else None
-
+    return lambda data, slct=selector, regexp=restr: data if re.search(restr, str(selectfrom(data, slct) if slct else data)) else None

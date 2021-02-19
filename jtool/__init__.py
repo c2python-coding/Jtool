@@ -29,20 +29,23 @@ def run():
     parser.add_argument("-d", "--debug", action='store_true',
                         help="print debug trace", required=False)
     args = parser.parse_args()
+    data = {}
     if (args.debug):
         enable_debug()
+    if args.filename:
+        with open(args.filename, "r") as f:
+            data = json.load(f)
+    else:
+        data = json.loads(sys.stdin.read())
     if args.commandstr:
         parsestring = args.commandstr
-        if args.filename:
-            with open(args.filename, "r") as f:
-                data = json.load(f)
-        else:
-            data = json.loads(sys.stdin.read())
         result = selectfrom(data, parsestring)
         if isinstance(result, str):
             print(result)
         else:
             print(json.dumps(result, indent=4))
+    else:
+        print(json.dumps(data, indent=4))
 
 
 if __name__ == "__main__":
