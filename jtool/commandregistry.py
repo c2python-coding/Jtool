@@ -1,5 +1,5 @@
-from .helpers import type_check, membership_check
-from .utils import print_debug, assert_with_data, raise_error
+from .func_asserts import lambda_type, lambda_member, lambda_error
+from .utils import assert_with_data, raise_error
 import re
 
 CUSTOM_COMMANDS = {}
@@ -10,7 +10,7 @@ DEFAULT_COMMANDS = {}
 # DEFAULT COMMANDS--------
 
 def KEY_SELECTOR(token):
-    return lambda data, tkn=token: type_check(data, dict)[membership_check(tkn, data)]
+    return lambda data, tkn=token: lambda_type(data, dict)[lambda_member(tkn, data)]
 
 
 COMMAND_HELP_LIST.append(
@@ -25,7 +25,7 @@ def MULTI_KEY_SELECT_OPERATION(token):
     assert_with_data(re.search(r"\{[\w,]+\}", token), token,
                      "multi key command must be in form {key1, key2 ...}")
     processed_keys = [key.strip() for key in token.strip("{}").split(",")]
-    return lambda data, keyset=processed_keys: {membership_check(key, type_check(data, dict)): data[key] for key in keyset}
+    return lambda data, keyset=processed_keys: {lambda_member(key, lambda_type(data, dict)): data[key] for key in keyset}
 
 
 DEFAULT_COMMANDS[MULTI_KEY_OPERATOR[0]
@@ -57,9 +57,9 @@ def ARRAY_SELECT_OPERATION(token):
             raise_error(token, "invalid array selection specifier")
     if len(indicies) == 1:
         tidx = indicies[0]
-        return lambda data, idx=tidx: type_check(data, list)[idx]
+        return lambda data, idx=tidx: lambda_type(data, list)[idx]
     else:
-        return lambda data, idxes=indicies: [type_check(data, list)[i] for i in idxes]
+        return lambda data, idxes=indicies: [lambda_type(data, list)[i] for i in idxes]
 
 
 DEFAULT_COMMANDS[ARRAY_OPERATOR[0]
@@ -69,17 +69,13 @@ COMMAND_HELP_LIST.append(
 
 # -------------------------
 
-
 ITER_OPERATOR = "*"
-
-
-def ITER_CHECK(val): return type_check(val, list)
-
 
 def ITER_OPERATION(token):
     assert_with_data(len(token) == 1, token,
                      "iteration operator sequencemust be in the form of '*.command_to_iterate'")
-    return ITER_CHECK
+    return lambda data: data if (isinstance(data, list) or isinstance(data, dict)) \
+        else lambda_error(data, "cant apply iterator on non json structure")
 
 
 DEFAULT_COMMANDS[ITER_OPERATOR] = lambda token: ITER_OPERATION(token)
@@ -100,13 +96,6 @@ def register_command(opname):
     return identity_dec
 
 # --------------------
-
-
-def is_iter_operation(op, subval):
-    if op == ITER_CHECK:
-        op(subval)
-        return True
-    return False
 
 
 def split_function_token(fulltoken):

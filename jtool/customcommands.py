@@ -1,5 +1,5 @@
 from .commandregistry import register_command
-from .helpers import type_check
+from .func_asserts import lambda_type
 from .processing import selectfrom
 from .utils import assert_with_data
 import re
@@ -17,22 +17,28 @@ def make_KEYS_op():
     return lambda data: [x for x in data]
 
 
-@register_command("keys2array")
+@register_command("values")
 def make_VALUES_op():
     '''creates array from values of top level keys'''
-    return lambda data: [data[key] for key in type_check(data, dict)]
+    return lambda data: [data[key] for key in lambda_type(data, dict)]
+
+
+@register_command("json2array")
+def make_CONVERT_op():
+    '''converts a json to array of single key jsons, i.e {key1:val1,...} -> [{key1:val1},...]'''
+    return lambda data: [{key: data[key]} for key in lambda_type(data, dict)]
 
 
 @register_command("flatten")
 def make_COMBINE_op():
     '''combines list of lists into a list'''
-    return lambda data: [c for subarray in type_check(data, list) for c in type_check(subarray, list)]
+    return lambda data: [c for subarray in lambda_type(data, list) for c in lambda_type(subarray, list)]
 
 
 @register_command("unique")
 def make_UNIQUE_op():
     '''selects unique values from list'''
-    return lambda data: list(set(type_check(data, list)))
+    return lambda data: list(set(lambda_type(data, list)))
 
 
 @register_command("count")

@@ -40,10 +40,11 @@ def run():
     if args.commandstr:
         parsestring = args.commandstr
         result = selectfrom(data, parsestring)
-        if isinstance(result, str):
-            print(result)
-        else:
-            print(json.dumps(result, indent=4))
+        if result:
+            if isinstance(result, str):
+                print(result)
+            else:
+                print(json.dumps(result, indent=4))
     else:
         print(json.dumps(data, indent=4))
 

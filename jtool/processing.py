@@ -1,5 +1,5 @@
 
-from .commandregistry import get_operation_lambda, is_iter_operation
+from .commandregistry import get_operation_lambda, ITER_OPERATOR
 from .utils import print_debug, assert_with_data
 
 
@@ -50,16 +50,23 @@ def selectfrom(jsondata, parsestr):
     subval = jsondata
     while operations:
         next_task = operations.pop(0)
-        if is_iter_operation(next_task.operation, subval):
-            assert_with_data(
-                operations, parsestr, "Cant apply iterator command without a subsequent command")
+        if next_task.token == ITER_OPERATOR:
+            subval = next_task.operation(subval)
             iter_task = operations.pop(0)
-            assert_with_data(not is_iter_operation(iter_task.operation, subval),
+            assert_with_data(iter_task.token != ITER_OPERATOR,
                              parsestr, "Iteration must be followed by a command to iterate")
             print_debug("Applying iterative operation:",
                         iter_task.token, iter_task.operation)
-            subval = [iter_task.operation(element) for element in subval]
-            subval = [element for element in subval if element is not None]
+            if isinstance(subval, list):
+                subval = [iter_task.operation(element) for element in subval]
+                subval = [element for element in subval if element is not None]
+            elif isinstance(subval, dict):
+                newdict = {}
+                for key in subval:
+                    result = iter_task.operation({key: subval[key]})
+                    if result:
+                        newdict.update(result)
+                subval = newdict
         else:
             print_debug("Applying operation:",
                         next_task.token, next_task.operation)
