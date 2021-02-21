@@ -18,7 +18,8 @@ def print_debug(*args):
 def json2shortstr(data_dict, truncate=50):
     return json.dumps(data_dict, separators=(',', ':'))[:truncate]+"..."
 
-##TODO this needs better error handling
+# TODO this needs better error handling
+
 
 def assert_with_data(condition, data, message):
     if not condition:

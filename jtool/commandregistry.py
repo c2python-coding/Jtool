@@ -1,4 +1,4 @@
-from .func_asserts import lambda_type, lambda_member, lambda_error
+from .func_asserts import lambda_type, lambda_member
 from .utils import assert_with_data, raise_error
 import re
 
@@ -71,16 +71,8 @@ COMMAND_HELP_LIST.append(
 
 ITER_OPERATOR = "*"
 
-def ITER_OPERATION(token):
-    assert_with_data(len(token) == 1, token,
-                     "iteration operator sequencemust be in the form of '*.command_to_iterate'")
-    return lambda data: data if (isinstance(data, list) or isinstance(data, dict)) \
-        else lambda_error(data, "cant apply iterator on non json structure")
-
-
-DEFAULT_COMMANDS[ITER_OPERATOR] = lambda token: ITER_OPERATION(token)
 COMMAND_HELP_LIST.append(
-    ITER_OPERATOR + " : applies the next command iteratively on items in a list")
+    ITER_OPERATOR + " : prepend to command to apply iteravely on a list or each key:value pair")
 
 # --------------------
 
@@ -113,10 +105,14 @@ def split_function_token(fulltoken):
 
 
 def get_operation_lambda(token, escaped=False):
+    is_iterator = False
     if escaped:
-        return KEY_SELECTOR(token)
+        return (KEY_SELECTOR(token), is_iterator)
+    if token[0] == "*":
+        is_iterator = True
+        token = token[1:]
     if token[0] in DEFAULT_COMMANDS:
-        return DEFAULT_COMMANDS[token[0]](token)
+        return (DEFAULT_COMMANDS[token[0]](token), is_iterator)
     else:
         if token[0] == "@":
             (tknname, params) = split_function_token(token)
@@ -128,9 +124,9 @@ def get_operation_lambda(token, escaped=False):
                     raise_error(token, str(e))
                 assert_with_data(callable(
                     t_callable), t_callable, "Returned operation must be a callable (function or lambda)")
-                return t_callable
+                return (t_callable, is_iterator)
             else:
                 raise_error(
                     token, "not a valid command (if you are trying to reference a key, escape it with ' or \" )")
         else:
-            return KEY_SELECTOR(token)
+            return (KEY_SELECTOR(token), is_iterator)

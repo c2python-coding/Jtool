@@ -7,6 +7,14 @@ def lambda_type(data, ttype):
     raise_error(json2shortstr(data), "selection is not of " + str(ttype))
 
 
+def lambda_multi_type(data, *test_types):
+    for t in test_types:
+        if isinstance(data, t):
+            return data
+    raise_error(json2shortstr(data),
+                "selection is not of " + str(t))
+
+
 def lambda_member(item, collection):
     if item in collection:
         return item
@@ -17,7 +25,3 @@ def lambda_member(item, collection):
         collection_str = "dict"
     e_message = str(item) + " not in " + collection_str
     raise_error(json2shortstr(collection), e_message)
-
-
-def lambda_error(data, msg):
-    raise_error(data, message)

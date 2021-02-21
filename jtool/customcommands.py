@@ -1,5 +1,5 @@
 from .commandregistry import register_command
-from .func_asserts import lambda_type
+from .func_asserts import lambda_type, lambda_multi_type
 from .processing import selectfrom
 from .utils import assert_with_data
 import re
@@ -14,13 +14,19 @@ See README.md for explanation
 @register_command("keys")
 def make_KEYS_op():
     '''returns the keys at the top level'''
-    return lambda data: [x for x in data]
+    return lambda data: [x for x in lambda_type(data, dict)]
 
 
 @register_command("values")
 def make_VALUES_op():
     '''creates array from values of top level keys'''
     return lambda data: [data[key] for key in lambda_type(data, dict)]
+
+
+@register_command("len")
+def make_Length_op():
+    '''length of element'''
+    return lambda data: len(lambda_multi_type(data, list, dict))
 
 
 @register_command("json2array")
