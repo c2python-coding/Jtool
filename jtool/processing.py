@@ -39,7 +39,8 @@ def parse_commands(tokenstr):
                     groupchar = ")"
                 buffer += tokenstr[idx]
         idx += 1
-    assert not groupchar, f"mismatch quotes/parenthesis {groupchar}"
+    if groupchar:
+        raise_error(tokenstr, "mismatched parenthesis")
     if buffer:
         command_list.append(OperationToken(buffer))
     return command_list
