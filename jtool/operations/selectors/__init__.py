@@ -1,7 +1,7 @@
-from .commandregistry import register_command
-from .func_asserts import lambda_type, lambda_multi_type
-from .processing import selectfrom
-from .utils import assert_with_data
+from jtool.execution.registry import register_command
+from jtool.execution import runprogram
+from jtool.utils.func_asserts import lambda_type, lambda_multi_type
+from jtool.utils.errorhandling import assert_with_data
 import re
 
 '''
@@ -67,4 +67,4 @@ def make_FILTER_op(params):
     fsplit = params.split("=>")
     selector = fsplit[0]
     restr = fsplit[1]
-    return lambda data, slct=selector, regexp=restr: data if re.search(restr, str(selectfrom(data, slct) if slct else data)) else None
+    return lambda data, slct=selector, regexp=restr: data if re.search(restr, str(runprogram(data, slct) if slct else data)) else None

@@ -2,14 +2,13 @@ import sys
 import json
 import argparse
 from argparse import RawTextHelpFormatter
-from . import commandregistry
-from . import customcommands
-from .processing import selectfrom
-from .utils import enable_debug
+from . import execution
+from . import operations
+from .utils.debug import enable_debug
 
 
-_INITIAL_HELP_STR = """A tool for selecting json fields. Accepts a file or stdin as input
-Syntax for the selector command string follows the dot (.) notaion, where commands
+_INITIAL_HELP_STR = """A tool for working with json/html/xml. Accepts a file or stdin as input
+Syntax for the selector command string follows the dot (.) notation, where commands
 are separated by period.
 For special characters in selectors or expressions,  you can use single/double quotes 
 to avoid interpretation as a command
@@ -20,7 +19,7 @@ The following are valid commands. Some take arguments passed in ():
 
 def run():
     description_str = _INITIAL_HELP_STR + \
-        "\n".join("  "+x for x in commandregistry.COMMAND_HELP_LIST)
+        "\n".join("  "+x for x in execution.registry.COMMAND_HELP_LIST)
     parser = argparse.ArgumentParser(
         description=description_str, formatter_class=RawTextHelpFormatter)
     parser.add_argument("commandstr", help="json select command", nargs="?")
@@ -39,7 +38,7 @@ def run():
         data = json.loads(sys.stdin.read())
     if args.commandstr:
         parsestring = args.commandstr
-        result = selectfrom(data, parsestring)
+        result = execution.runprogram(data, parsestring)
         if result:
             if isinstance(result, str):
                 print(result)
