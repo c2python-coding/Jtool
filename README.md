@@ -20,25 +20,7 @@ You can then see the options using the `jtool -h ` flag
 ```txt
 usage: jtool [-h] [-f FILE] [-d] [commandstr]
 
-A tool for selecting json fields. Accepts a file or stdin as input
-Syntax for the selector command string follows the dot (.) notaion, where commands
-are separated by period.
-For special characters in selectors or expressions,  you can use single/double quotes 
-to avoid interpretation as a command
-The following are valid commands. Some take arguments passed in ():
-
-  key : selects the particular key from the given top level json
-  - : identity operator (returns the current selection without modification)
-  {} : selects multiple keys from the current dictionary
-  [] : selects range or particular indicies of arrays
-  * : applies next command iteratively on items in a list
-  @keys : returns the keys at the top level
-  @keys2array : creates array from values of top level keys
-  @flatten : combines list of lists into a list
-  @unique : selects unique values from list
-  @count : counts number of elements in list or top level values in dict
-  @type : returns type of data
-  @refilter : regexp filter on list based on the syntax (selector=>regular_expression)
+A tool for working with json/csv/xml/html/text data
 
 positional arguments:
   commandstr            json select command
@@ -53,52 +35,14 @@ optional arguments:
 ### Query Language
 
 The queries for the jtool are written in dot (.) notation where each command is separated by a period. 
+See `-h` for a list of available commands
 
-For example, for a file test.json
-
-```json
-{
-    "data": [
-        {
-            "akey": [
-                1,
-                2,
-                3
-            ]
-        },
-        {
-            "akey": [
-                4,
-                5,
-                6
-            ]
-        }
-    ]
-}
-```
-
-the command 
-
-```sh
-jtool -f test.json  "data.*.akey.*.[1]"`
-```
-
-will return 
-
-```json
-[
-    2,
-    5
-]
-```
-
-See the `-h` for all available query 
 
 ## Custom commands
 
-Custom commands are defined in `customcommands.py` file and allow for extending the query language. 
+All commands are defined in files in the `operations` folder and allow for extending the query language. 
 
-Each custom command must follow the following specification
+Each command must follow the following specification
 
 ### 1. Commands
 The commands name  name (ex. `moo`) is referenced as follows in the query string.
@@ -106,7 +50,7 @@ The commands name  name (ex. `moo`) is referenced as follows in the query string
 *  `@moo(...)` for a parameter command where `...` is a string with whatever parameters are in the query string. 
 
 ### 2. Registration
-To add the command `moo`, in the `customcommands.py` file, define a new function using the following format 
+To add the command `moo`, define a new function using the following format 
 
 ```python
 @register_command("moo")  # required to register command
