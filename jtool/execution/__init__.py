@@ -1,6 +1,6 @@
-
-from .commandregistry import get_operation_lambda, ITER_OPERATOR
-from .utils import raise_error, print_debug, assert_with_data
+from . registry import get_operation_lambda
+from jtool.utils.errorhandling import raise_error, assert_with_data
+from jtool.utils.debug import print_debug
 
 
 class OperationToken:
@@ -46,7 +46,7 @@ def parse_commands(tokenstr):
     return command_list
 
 
-def selectfrom(jsondata, parsestr):
+def runprogram(jsondata, parsestr):
     operations = parse_commands(parsestr)
     subval = jsondata
     while operations:
@@ -63,7 +63,8 @@ def selectfrom(jsondata, parsestr):
                     result = next_task.operation({key: subval[key]})
                     if result:
                         if not isinstance(result, dict):
-                            raise_error(result, "Iteratitve operation on a json must return invidiual jsons")
+                            raise_error(
+                                result, "Iteratitve operation on a json must return invidiual jsons")
                         newdict.update(result)
                 subval = newdict
             else:

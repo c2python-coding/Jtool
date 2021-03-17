@@ -2,28 +2,64 @@ import sys
 import json
 import argparse
 from argparse import RawTextHelpFormatter
-from . import commandregistry
-from . import customcommands
-from .processing import selectfrom
-from .utils import enable_debug
+from . import execution
+from . import operations
+from .utils.debug import enable_debug
 
 
-_INITIAL_HELP_STR = """A tool for selecting json fields. Accepts a file or stdin as input
-Syntax for the selector command string follows the dot (.) notaion, where commands
-are separated by period.
-For special characters in selectors or expressions,  you can use single/double quotes 
-to avoid interpretation as a command
-The following are valid commands. Some take arguments passed in ():
+_INITIAL_HELP_STR = """A tool for processing json/html/xml/csv/text data. 
+
+Processing is accomplished by specifying a chain of commands separated by (.), where each
+command takes the input produced by the previous command and sends the output to the next 
+command. For special characters in selectors or expressions, you can use single/double 
+quotes to avoid interpretation as a command
+
+The input data by default is parsed as text string
+The parser commands force a specific parser to be applied to data, such as json, csv, etc
+
+Under the hood, XML/HTML data is parsed into a json format, where each element is reprsented 
+with its tagname, attribute key value pairs, and children as follows
+{ "<tagname>": ...
+  "attr1": "value1",
+  "attr2": "value1",
+  "<children>": [...]
+}
+
+This enables the easy basic processing/filter using key:value or list commands, or more xml/html
+applicable commands. 
+
+The render operations cause the filtered/processed data to be rendered in the specified form. 
+By default, the output is a string, since it can represent all types of data. 
+
+
+The following are valid commands. Some take arguments passed in ().
+
 
 """
 
+first_help_items = ["core operators", "parsers"]
+
+
+def build_help_str(namespace):
+    items = execution.registry.COMMAND_HELP_LIST[namespace]
+    headerstr = "---"+" ".join(x.capitalize()
+                               for x in namespace.split("_")) + "---\n"
+    cmdstr = "\n".join(cmd for cmd in items)
+    return "\n"+headerstr+cmdstr+"\n"
+
 
 def run():
-    description_str = _INITIAL_HELP_STR + \
-        "\n".join("  "+x for x in commandregistry.COMMAND_HELP_LIST)
+    description_str = _INITIAL_HELP_STR+"\n"
+    for item in first_help_items:
+        description_str += build_help_str(item)
+
+    for namespace in execution.registry.COMMAND_HELP_LIST:
+        if namespace not in first_help_items:
+            description_str += build_help_str(namespace)
+
     parser = argparse.ArgumentParser(
         description=description_str, formatter_class=RawTextHelpFormatter)
-    parser.add_argument("commandstr", help="json select command", nargs="?")
+    parser.add_argument("commandstr", help="selector command", nargs="?")
     parser.add_argument("-f", "--filename", required=False,
                         metavar='FILE', help="process file instead of stdin")
     parser.add_argument("-d", "--debug", action='store_true',
@@ -32,21 +68,20 @@ def run():
     data = {}
     if (args.debug):
         enable_debug()
+
+    # TODO make this buffered reading
     if args.filename:
         with open(args.filename, "r") as f:
-            data = json.load(f)
+            data = f.read()
     else:
-        data = json.loads(sys.stdin.read())
+        data = sys.stdin.read()
     if args.commandstr:
         parsestring = args.commandstr
-        result = selectfrom(data, parsestring)
+        result = execution.runprogram(data, parsestring)
         if result:
-            if isinstance(result, str):
-                print(result)
-            else:
-                print(json.dumps(result, indent=4))
+            print(str(result))
     else:
-        print(json.dumps(data, indent=4))
+        print(data)
 
 
 if __name__ == "__main__":
