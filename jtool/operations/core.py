@@ -1,15 +1,14 @@
-from jtool.execution.registry import COMMAND_HELP_LIST, CORE_COMMANDS
+from jtool.execution.registry import append_help_item, CORE_COMMANDS
 from jtool.utils.errorhandling import assert_with_data, raise_error
 from jtool.utils.func_asserts import lambda_member, lambda_type
 import re
 
+corens = "core operators"
 
 def KEY_SELECTOR(token):
     return lambda data, tkn=token: lambda_type(data, dict)[lambda_member(tkn, data)]
 
-
-COMMAND_HELP_LIST.append(
-    "key : selects the particular key from the given top level json")
+append_help_item(corens, "key : returns the value for particular key or attribute")
 
 CORE_COMMANDS[None] = KEY_SELECTOR
 
@@ -26,8 +25,7 @@ def MULTI_KEY_SELECT_OPERATION(token):
 
 CORE_COMMANDS[MULTI_KEY_OPERATOR[0]
                  ] = MULTI_KEY_SELECT_OPERATION
-COMMAND_HELP_LIST.append(
-    MULTI_KEY_OPERATOR + " : selects multiple keys from the current dictionary")
+append_help_item(corens, MULTI_KEY_OPERATOR + " : returns values for multiple keys/attributes")
 
 # --------------------
 
@@ -60,14 +58,12 @@ def ARRAY_SELECT_OPERATION(token):
 
 CORE_COMMANDS[ARRAY_OPERATOR[0]
                  ] = ARRAY_SELECT_OPERATION
-COMMAND_HELP_LIST.append(
-    ARRAY_OPERATOR + " : selects range or particular indicies of arrays [0,1,2-4,...]")
+append_help_item(corens, ARRAY_OPERATOR + " : selects range or particular indicies of arrays [0,1,2-4,...]")
 
 # -------------------------
 
 ITER_OPERATOR = "*"
 
-COMMAND_HELP_LIST.append(
-    ITER_OPERATOR + " : prepend to command to apply iteravely on a list or each key:value pair")
+append_help_item(corens, ITER_OPERATOR + " : prepend to command to apply iteravely on a list or each key:value pair")
 
 # --------------------

@@ -1,6 +1,8 @@
 import sys
 import json
 
+# TODO make this better
+
 def shortstr(data_dict, truncate=50):
     return json.dumps(data_dict, separators=(',', ':'))[:truncate]+"..."
 

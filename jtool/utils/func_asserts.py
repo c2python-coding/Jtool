@@ -24,3 +24,11 @@ def lambda_member(item, collection):
         collection_str = "dict"
     e_message = str(item) + " not in " + collection_str
     raise_error(collection, e_message)
+
+
+def exception_wrapper(lambdafun, data, errormsg):
+    try:
+        val = lambdafun(data)
+        return val
+    except Exception:
+        raise_error(data, errormsg)

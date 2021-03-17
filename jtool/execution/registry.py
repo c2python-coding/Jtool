@@ -2,20 +2,30 @@ from jtool.utils.errorhandling import raise_error, assert_with_data
 
 
 CUSTOM_COMMANDS = {}
-COMMAND_HELP_LIST = []
+COMMAND_HELP_LIST = {}
 CORE_COMMANDS = {}
 
 
+def append_help_item(namespace,helpstring):
+    if namespace not in COMMAND_HELP_LIST:
+        COMMAND_HELP_LIST[namespace] = []
+    COMMAND_HELP_LIST[namespace].append(helpstring)
+
 def register_command(opname):
     ''' decorator for registering custom commands'''
+    assert_with_data(opname not in CUSTOM_COMMANDS, opname, "duplicate operation name")
     def identity_dec(func, operation=opname):
+        namespace = func.__module__.split(".")[-1]
         CUSTOM_COMMANDS[operation] = func
+        if func.__code__.co_argcount > 0:
+            pstring = "("+func.__code__.co_varnames[0]+")"
+        else:
+            pstring = "" 
         assert_with_data(func.__doc__, func,
                          "no description defined for custom function")
-        COMMAND_HELP_LIST.append("@" + opname + " : " + func.__doc__)
+        append_help_item(namespace, "@" + opname + pstring + " : " + func.__doc__)
         return func
     return identity_dec
-
 
 
 def split_function_token(fulltoken):
