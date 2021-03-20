@@ -1,13 +1,15 @@
 from jtool.execution.registry import register_command
+from jtool.utils.constants import canoncial_type_names
+
 
 @register_command("count")
-def make_COUNT_op():
+def COUNT_OP():
     '''counts number of elements in list or top level values in dict'''
     return lambda data: len(data)
 
 
 @register_command("type")
-def make_TYPE_op():
+def TYPE_OP():
     '''returns type of data'''
-    return lambda data: type(data).__name__ if not isinstance(data, dict) else "json"
+    return lambda data: canoncial_type_names[type(data)]
 

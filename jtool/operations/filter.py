@@ -6,16 +6,25 @@ import re
 
 
 @register_command("unique")
-def make_UNIQUE_op():
+def UNIQUE():
     '''selects unique values from list'''
     return lambda data: list(set(lambda_type(data, list)))
 
 @register_command("refilter")
-def make_FILTER_op(filterspec):
-    '''regexp filter based on the syntax (selector=>regular_expression)'''
+def RE_FILTER(filterspec):
+    '''regexp filter with parameter (jtool_command=>regexp). 
+    converts input to string, runs the processing commands in jtool_command, 
+    and applies the regular expression filter regexp'''
     assert_with_data("=>" in filterspec, filterspec,
                      "regexp filter must be in fhe form of selector=>regular_expression")
     fsplit = filterspec.split("=>")
     selector = fsplit[0]
     restr = fsplit[1]
     return lambda data, slct=selector, regexp=restr: data if re.search(restr, str(runprogram(data, slct) if slct else data)) else None
+
+
+@register_command("haskey")
+def HASKEY(key):
+    '''returns the json if it contains the given key'''
+    return lambda data, haskey=key: data if (isinstance(data, dict) and haskey in data) else None
+      

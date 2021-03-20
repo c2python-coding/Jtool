@@ -17,17 +17,6 @@ quotes to avoid interpretation as a command
 The input data by default is parsed as text string
 The parser commands force a specific parser to be applied to data, such as json, csv, etc
 
-Under the hood, XML/HTML data is parsed into a json format, where each element is reprsented 
-with its tagname, attribute key value pairs, and children as follows
-{ "<tagname>": ...
-  "attr1": "value1",
-  "attr2": "value1",
-  "<children>": [...]
-}
-
-This enables the easy basic processing/filter using key:value or list commands, or more xml/html
-applicable commands. 
-
 The render operations cause the filtered/processed data to be rendered in the specified form. 
 By default, the output is a string, since it can represent all types of data. 
 

@@ -1,17 +1,12 @@
 import sys
-import json
 
 # TODO make this better
-
-def shortstr(data_dict, truncate=50):
-    return json.dumps(data_dict, separators=(',', ':'))[:truncate]+"..."
 
 
 def assert_with_data(condition, data, message):
     if not condition:
-        if isinstance(data, list) or isinstance(data, dict):
-            data = shortstr(data)
-        print("Error:", message, "  (Recieved input =", str(data), ")")
+        pdata = str(data)[:50]+ ("..." if len(data)>50 else "") 
+        print("Error:", message, "  (Recieved input =", pdata, ")")
         sys.exit(1)
 
 

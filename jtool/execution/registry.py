@@ -1,5 +1,5 @@
 from jtool.utils.errorhandling import raise_error, assert_with_data
-
+from jtool.utils.debug import print_debug
 
 CUSTOM_COMMANDS = {}
 COMMAND_HELP_LIST = {}
@@ -7,6 +7,11 @@ CORE_COMMANDS = {}
 
 
 def append_help_item(namespace,helpstring):
+    helparray = helpstring.split("\n")
+    if len(helparray) > 1:
+        helparray = [x.strip(" \t") for x in helparray]
+        idx = helparray[0].find(":")+2
+        helpstring = "\n".join([helparray[0]] +[idx*" " + x for x in helparray[1:]])
     if namespace not in COMMAND_HELP_LIST:
         COMMAND_HELP_LIST[namespace] = []
     COMMAND_HELP_LIST[namespace].append(helpstring)
@@ -14,6 +19,7 @@ def append_help_item(namespace,helpstring):
 def register_command(opname):
     ''' decorator for registering custom commands'''
     assert_with_data(opname not in CUSTOM_COMMANDS, opname, "duplicate operation name")
+    assert_with_data(":" not in opname, opname, "opname cannot contain :")
     def identity_dec(func, operation=opname):
         namespace = func.__module__.split(".")[-1]
         CUSTOM_COMMANDS[operation] = func
@@ -21,7 +27,7 @@ def register_command(opname):
             pstring = "("+func.__code__.co_varnames[0]+")"
         else:
             pstring = "" 
-        assert_with_data(func.__doc__, func,
+        assert_with_data(func.__doc__, str(func),
                          "no description defined for custom function")
         append_help_item(namespace, "@" + opname + pstring + " : " + func.__doc__)
         return func
@@ -39,6 +45,10 @@ def split_function_token(fulltoken):
     else:
         tknname = fulltoken[1:]
         tknparams = None
+    paramdebug = ""
+    if tknparams:
+        paramdebug = " with parameters("+tknparams+")"
+    print_debug("Found command", tknname + paramdebug)
     return(tknname, tknparams)
 
 
