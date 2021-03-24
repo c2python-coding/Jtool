@@ -6,7 +6,7 @@ def lambda_type(data, *test_types):
     for t in test_types:
         if isinstance(data, t):
             return data
-    raise_error(data, "selection is not of types [" + ",".join(canoncial_type_names[x] for x in test_types) + "]") 
+    raise_error(data, "selection is not of types [" + ",".join(canoncial_type_names[x] for x in test_types) + "]")
 
 
 def lambda_member(item, collection):
@@ -14,7 +14,6 @@ def lambda_member(item, collection):
         return item
     e_message = str(item) + " not in " + canoncial_type_names[type(collection)]
     raise_error(collection, e_message)
-
 
 
 def exception_wrapper(lambdafun, data, errormsg):

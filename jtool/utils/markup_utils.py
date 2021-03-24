@@ -1,8 +1,6 @@
-from html import unescape, escape
 from html.parser import HTMLParser
 from .errorhandling import assert_with_data, raise_error
 from .constants import PRETTY_INDENT as p_ind
-import re
 
 TAG_KEY = "<tag>"
 INNER_KEY = "<inner_content>"
@@ -10,7 +8,8 @@ PARENT_KEY = "<parent_key>"
 SPECIAL_HTML_KEYS = [TAG_KEY, INNER_KEY, PARENT_KEY]
 no_close_tags = ["img", "input", "br", "hr", "meta", "etc", "link", "source"]
 
-def format_data(datastr,convert_to_nums=False):
+
+def format_data(datastr, convert_to_nums=False):
     if datastr is None:
         return None
     testdata = datastr.replace("\n", "").replace(" ", "")
@@ -27,8 +26,7 @@ def format_data(datastr,convert_to_nums=False):
             return floatval
         except ValueError:
             pass
-    fmtstring = unescape(datastr)
-    returnarray = [x.strip() for x in fmtstring.split("\n")]
+    returnarray = [x.strip() for x in datastr.split("\n")]
     returnstring = "\n".join(x for x in returnarray if x)
     return returnstring
 
@@ -124,7 +122,6 @@ def make_tag(tagdata, indent=0):
                 attr_array.append(f"{item}=\"{tagdata[item]}\"")
     if attr_array:
         attr_string = " " + " ".join(attr_array)
-    
     if INNER_KEY not in tagdata:
         endpart = "/>" if tagdata['<tag>'] not in no_close_tags else ">"
         return_array = [spacing +

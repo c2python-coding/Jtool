@@ -1,9 +1,6 @@
 from jtool.execution.registry import register_command
 from jtool.utils.errorhandling import raise_error
 from jtool.utils.markup_utils import TAG_KEY, INNER_KEY, SPECIAL_HTML_KEYS
-import re
-
-
 
 
 def lambda_istag(tag):
@@ -13,11 +10,12 @@ def lambda_istag(tag):
         raise_error(tag, "recieved a list, expecting a tag structure")
     raise_error(tag, "wrongly formatted tag structure")
 
+
 def lambda_ismarkup(markup):
     if isinstance(markup, str):
         return markup
     return lambda_istag(markup)
-    
+
 
 def lambda_hascontent(tag):
     if INNER_KEY in lambda_istag(tag):
@@ -53,14 +51,14 @@ def tag_search(condition_lambda, tags):
 @register_command("tagtype")
 def TAGTYPE_OP():
     '''returns the htmltag'''
-    return lambda tag: lambda_type(tag, dict)[lambda_member(TAG_KEY, tag)]
+    return lambda tag: lambda_istag(tag)[TAG_KEY]
 
 
 @register_command("tagattrs")
 def TAGATTRS_OP():
     '''returns the tag attributes'''
     extract_attrs = lambda tag: {key: tag[key] for key in tag if key not in SPECIAL_HTML_KEYS}
-    return lambda markup: extract_attrs(lambda_type(markup, dict))
+    return lambda markup: extract_attrs(lambda_istag(markup))
 
 
 @register_command("innerhtml")
@@ -72,9 +70,8 @@ def INNERHTML_OP():
 @register_command("childtags")
 def CHILDTAGS_OP():
     '''return an array of child tags, excluding inner html text'''
-    tagfilter = lambda innerlist: [lambda_istag(tag) for tag in innerlist if isinstance(tag,dict)]
+    tagfilter = lambda innerlist: [lambda_istag(tag) for tag in innerlist if isinstance(tag, dict)]
     return lambda ptag: tagfilter(ptag[INNER_KEY]) if INNER_KEY in lambda_istag(ptag) else []
-
 
 
 def get_attr_dict(attrstring):
@@ -120,7 +117,6 @@ def get_attr_dict(attrstring):
     return accumulator
 
 
-
 @register_command("findtags")
 def FINDALL_OP(tagspec):
     '''finds all descendant tags by specification (tagtype arrt1=val1 attr2=val2) and returns an array'''
@@ -133,4 +129,4 @@ def FINDALL_OP(tagspec):
         attr_string = tagspec
     f_attrs = get_attr_dict(attr_string) if attr_string else {}
     matcher = lambda tag, tt=f_type, td=f_attrs: tag_matcher(lambda_ismarkup(tag), tt, td)
-    return lambda markup: tag_search(matcher, markup) 
+    return lambda markup: tag_search(matcher, markup)

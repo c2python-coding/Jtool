@@ -1,5 +1,4 @@
 import sys
-import json
 import argparse
 from argparse import RawTextHelpFormatter
 from . import execution
@@ -7,18 +6,18 @@ from . import operations
 from .utils.debug import enable_debug
 
 
-_INITIAL_HELP_STR = """A tool for processing json/html/xml/csv/text data. 
+_INITIAL_HELP_STR = """A tool for processing json/html/xml/csv/text data.
 
 Processing is accomplished by specifying a chain of commands separated by (.), where each
-command takes the input produced by the previous command and sends the output to the next 
-command. For special characters in selectors or expressions, you can use single/double 
+command takes the input produced by the previous command and sends the output to the next
+command. For special characters in selectors or expressions, you can use single/double
 quotes to avoid interpretation as a command
 
 The input data by default is parsed as text string
 The parser commands force a specific parser to be applied to data, such as json, csv, etc
 
-The render operations cause the filtered/processed data to be rendered in the specified form. 
-By default, the output is a string, since it can represent all types of data. 
+The render operations cause the filtered/processed data to be rendered in the specified form.
+By default, the output is a string, since it can represent all types of data.
 
 
 The following are valid commands. Some take arguments passed in ().

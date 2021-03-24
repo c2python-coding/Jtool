@@ -33,7 +33,7 @@ def parse_commands(tokenstr):
                 command_list.append(OperationToken(buffer))
                 buffer = ""
             else:
-                #escapes the stuff in quotes as one singular entry. 
+                # escapes the stuff in quotes as one singular entry.
                 if tokenstr[idx] in ["'", "\""]:
                     groupchar = tokenstr[idx]
                 elif tokenstr[idx] == "(":

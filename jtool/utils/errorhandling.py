@@ -5,7 +5,7 @@ import sys
 
 def assert_with_data(condition, data, message):
     if not condition:
-        pdata = str(data)[:50]+ ("..." if len(str(data))>50 else "") 
+        pdata = str(data)[:50] + ("..." if len(str(data)) > 50 else "")
         print("Error:", message, "  (Recieved input =", pdata, ")")
         sys.exit(1)
 
