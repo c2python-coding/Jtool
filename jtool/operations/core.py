@@ -64,6 +64,6 @@ append_help_item(corens, ARRAY_OPERATOR + " : selects range or particular indici
 
 ITER_OPERATOR = "*"
 
-append_help_item(corens, ITER_OPERATOR + " : prepend to command to apply iteravely on a list or each key:value pair")
+append_help_item(corens, ITER_OPERATOR + " : prepend to command to apply iteravely on an array or each key:value pair")
 
 # --------------------

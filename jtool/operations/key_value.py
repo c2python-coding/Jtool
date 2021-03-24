@@ -11,13 +11,13 @@ See README.md for explanation
 
 @register_command("keys")
 def KEYS_OP():
-    '''returns the list keys'''
+    '''returns the keys in an array'''
     return lambda data: [x for x in lambda_type(data, dict)]
 
 
 @register_command("values")
 def VALUES_OP():
-    '''creates list from values of top level keys'''
+    '''returns an array of values of top level keys'''
     return lambda data: [data[key] for key in lambda_type(data, dict)]
 
 

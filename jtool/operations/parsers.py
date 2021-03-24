@@ -1,9 +1,7 @@
 from jtool.execution.registry import register_command
 from jtool.utils.func_asserts import lambda_type, exception_wrapper
-from jtool.utils.markup import parse_html
+from jtool.utils.markup_utils import parse_html
 import json
-
-
 
 
 @register_command("json")

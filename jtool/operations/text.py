@@ -4,13 +4,13 @@ import re
 
 @register_command("splitlines")
 def SPLITLINES_OP():
-    '''counts number of elements in list or top level values in dict'''
+    '''splits the text by lines'''
     return lambda data: lambda_type(data, str).split("\n")
 
 
-@register_command("splitstring")
+@register_command("resplit")
 def SPLITLINES_OP(re_delimeter):
-    '''counts number of elements in list or top level values in dict'''
+    '''splits the string by a delimeter and returns an array'''
     re_delimeter = re_delimeter.strip("'\"")
     splitlambda = lambda data, tkn=re_delimeter: re.split(tkn, lambda_type(data, str))
     return lambda instring: exception_wrapper(splitlambda, instring, "error splitting by regular expression")

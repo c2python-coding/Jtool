@@ -48,6 +48,9 @@ def split_function_token(fulltoken):
     paramdebug = ""
     if tknparams:
         paramdebug = " with parameters("+tknparams+")"
+        if "\\n" in tknparams or "\\t" in tknparams:
+            tknparams = tknparams.replace("\\n","\n").replace("\\t","\t")
+            print_debug("Replacing \\n and \\t characters  in parameters with newline/tab")
     print_debug("Found command", tknname + paramdebug)
     return(tknname, tknparams)
 
@@ -69,9 +72,9 @@ def get_operation_lambda(token, escaped=False):
                     t_callable = CUSTOM_COMMANDS[tknname](
                         params) if params else CUSTOM_COMMANDS[tknname]()
                 except TypeError as e:
-                    raise_error(token, str(e))
+                    raise_error(token, str(e)+", in operation generator function")
                 assert_with_data(callable(
-                    t_callable), t_callable, "Returned operation must be a callable (function or lambda)")
+                    t_callable), token, "Returned operation for given token must be a callable (function or lambda)")
                 return (t_callable, is_iterator)
             else:
                 raise_error(

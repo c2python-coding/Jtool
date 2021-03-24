@@ -4,7 +4,7 @@ from jtool.utils.constants import canoncial_type_names
 
 @register_command("count")
 def COUNT_OP():
-    '''counts number of elements in list or top level values in dict'''
+    '''counts number of elements in array or top level values in dict'''
     return lambda data: len(data)
 
 
