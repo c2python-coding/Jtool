@@ -27,3 +27,7 @@ def SPLIT_OP():
     return lambda data: [{key: data[key]} for key in lambda_type(data, dict)]
 
 
+@register_command("remove")
+def REMOVE_OP(key):
+    '''removes a entry from json by key'''
+    return lambda data: [{key: data[key]} for key in lambda_type(data, dict)]
