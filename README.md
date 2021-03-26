@@ -1,7 +1,8 @@
 # Jtool
 
+A tool for processing json/html/xml/csv/text data with json like manipulation. 
 
-JSON selection tool on par with json, aimed for easy extensibility with Python
+Aimed for easy use and extensibilty. 
 
 ## Requirements
 
