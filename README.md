@@ -41,13 +41,14 @@ See `-h` for a list of available commands
 ## Custom commands
 
 All commands are defined in files in the `operations` folder and allow for extending the query language. 
-
-Each command must follow the following specification
+Each command must follow the following specification:
 
 ### 1. Commands
 The commands name  name (ex. `moo`) is referenced as follows in the query string.
 *  `@moo` for a non parameter command or
 *  `@moo(...)` for a parameter command where `...` is a string with whatever parameters are in the query string. 
+
+The parameter string in the paretheses is automatically escaped, so using , core operators or other `@` commands does not cause errors
 
 ### 2. Registration
 To add the command `moo`, define a new function using the following format 
@@ -56,11 +57,10 @@ To add the command `moo`, define a new function using the following format
 @register_command("moo")  # required to register command
 def make_KEYS_op(params): # function name not imporant
     '''description, as displayed when jtool -h is invoked'''
-    #params will be a string that is between (), non including the ()
+    #params is optional and will be a string that is between () in the command spec
     parse_parameters(params)
     #the processing code here must define a callable (lambda or function)
-    #that takes a valid json element 
-    #and returns something
+    #that takes a valid input  and returns something
     return lambda data: {"mooable":data}
 
 ```
