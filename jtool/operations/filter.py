@@ -20,11 +20,11 @@ def RE_FILTER(filterspec):
     fsplit = filterspec.split("=>")
     selector = fsplit[0]
     restr = fsplit[1]
-    return lambda data, slct=selector, regexp=restr: data if re.search(restr, str(runprogram(data, slct) if slct else data)) else None
+    return lambda data: data if re.search(restr, str(runprogram(data, selector) if selector else data)) else None
 
 
 @register_command("haskey")
 def HASKEY(key):
     '''returns the json if it contains the given key'''
-    return lambda data, haskey=key: data if (isinstance(data, dict) and haskey in data) else None
+    return lambda data: data if (isinstance(data, dict) and key in data) else None
       

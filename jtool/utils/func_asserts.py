@@ -6,7 +6,8 @@ def lambda_type(data, *test_types):
     for t in test_types:
         if isinstance(data, t):
             return data
-    raise_error(data, "selection is not of types [" + ",".join(canoncial_type_names[x] for x in test_types) + "]")
+    raise_error(data, "selection is not of types [" + ",".join(
+        canoncial_type_names[x] for x in test_types) + "]")
 
 
 def lambda_member(item, collection):
@@ -22,3 +23,9 @@ def exception_wrapper(lambdafun, data, errormsg):
         return val
     except Exception:
         raise_error(data, errormsg)
+
+
+def lambda_in_range(list, index):
+    if index >= 0 and index <= len(list):
+        return index
+    raise_error(index, "Index out of range")
