@@ -1,5 +1,5 @@
-from jtool.utils.errorhandling import raise_error, assert_with_data
-from jtool.utils.debug import print_debug
+from ..utils.errorhandling import raise_error, assert_with_data
+from ..utils.debug import print_debug
 
 CUSTOM_COMMANDS = {}
 COMMAND_HELP_LIST = {}

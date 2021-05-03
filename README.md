@@ -6,7 +6,7 @@ Aimed for easy use and extensibilty.
 
 ## Requirements
 
-Developed for python3.6+`, not guaranteed to work on older versions
+Developed for `python3.6+`, not guaranteed to work on older versions
 
 ## Usage
 
