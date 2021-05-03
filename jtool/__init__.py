@@ -5,6 +5,9 @@ from . import execution
 from . import operations
 from .utils.debug import enable_debug
 
+"""test help"""
+
+
 
 _INITIAL_HELP_STR = """A tool for processing json/html/xml/csv/text data.
 
@@ -25,49 +28,58 @@ The following are valid commands. Some take arguments passed in ().
 
 """
 
-first_help_items = ["core operators", "parsers"]
+
+def parse(content, commandstr, debug=False):
+    if (debug):
+        enable_debug()
+    return execution.runprogram(content, commandstr)
 
 
-def build_help_str(namespace):
+
+def _build_help_str(namespace):
     items = execution.registry.COMMAND_HELP_LIST[namespace]
     headerstr = "---"+" ".join(x.capitalize()
                                for x in namespace.split("_")) + "---\n"
     cmdstr = "\n".join(cmd for cmd in items)
     return "\n"+headerstr+cmdstr+"\n"
 
+_first_help_items = ["core operators", "parsers"]
 
-def run():
-    description_str = _INITIAL_HELP_STR+"\n"
-    for item in first_help_items:
-        description_str += build_help_str(item)
+_full_help_str = _INITIAL_HELP_STR+"\n"
+for _item in _first_help_items:
+    _full_help_str += _build_help_str(_item)
 
-    for namespace in execution.registry.COMMAND_HELP_LIST:
-        if namespace not in first_help_items:
-            description_str += build_help_str(namespace)
+for _namespace in execution.registry.COMMAND_HELP_LIST:
+    if _namespace not in _first_help_items:
+        _full_help_str += _build_help_str(_namespace)
 
+parse.__doc__=_full_help_str
+
+
+def _script_entry():
+    global _full_help_str
     parser = argparse.ArgumentParser(
-        description=description_str, formatter_class=RawTextHelpFormatter)
-    parser.add_argument("commandstr", help="selector command", nargs="?")
+        description=_full_help_str, formatter_class=RawTextHelpFormatter)
+    parser.add_argument(
+        "commandstr", help="selector command", nargs="?", default='')
     parser.add_argument("-f", "--filename", required=False,
                         metavar='FILE', help="process file instead of stdin")
     parser.add_argument("-d", "--debug", action='store_true',
                         help="print debug trace", required=False)
     args = parser.parse_args()
-    data = {}
-    if (args.debug):
-        enable_debug()
 
-    # TODO make this buffered reading
+    data = ""
+
     if args.filename:
         with open(args.filename, "r") as f:
             data = f.read()
     else:
         data = sys.stdin.read()
-    if args.commandstr:
-        parsestring = args.commandstr
-        result = execution.runprogram(data, parsestring)
-        if result:
-            print(str(result))
-    else:
-        print(data)
 
+    if not data:
+        return
+
+    if not args.commandstr:
+        print(data)
+    else:
+        print(parse(data, args.commandstr, args.debug))

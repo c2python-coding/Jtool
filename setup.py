@@ -10,7 +10,5 @@ setup(
     url='https://github.com/c2python-coding/Jtool',
     description='Tool for working with json data',
     long_description=open('README.md').read(),
-    entry_points={
-        'console_scripts': ['jtool=jtool:run'],
-    }
+    scripts=["bin/jtool"]
 )
