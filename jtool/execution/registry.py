@@ -25,7 +25,7 @@ def register_command(opname):
     assert_with_data(":" not in opname, opname, "opname cannot contain :")
 
     def identity_dec(func, operation=opname):
-        namespace = func.__module__.split(".")[-1]
+        namespace = func.__module__.split(".")[-1].upper()
         CUSTOM_COMMANDS[operation] = func
         if func.__code__.co_argcount > 0:
             pstring = "("+func.__code__.co_varnames[0]+")"
