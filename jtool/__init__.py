@@ -38,12 +38,12 @@ def parse(content, commandstr, debug=False):
 
 def _build_help_str(namespace):
     items = execution.registry.COMMAND_HELP_LIST[namespace]
-    headerstr = "---"+" ".join(for x in namespace.split("_")) + "---\n"
+    headerstr = "---"+" ".join(x for x in namespace.split("_")) + "---\n"
     cmdstr = "\n".join(cmd for cmd in items)
     return "\n"+headerstr+cmdstr+"\n"
 
 
-_first_help_items = ["core operators", "parsers"]
+_first_help_items = ["CORE", "PARSERS"]
 
 _full_help_str = _INITIAL_HELP_STR+"\n"
 for _item in _first_help_items:

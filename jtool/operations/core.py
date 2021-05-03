@@ -3,7 +3,7 @@ from jtool.utils.errorhandling import assert_with_data, raise_error
 from jtool.utils.func_asserts import lambda_member, lambda_type, lambda_in_range
 import re
 
-core_namespace = "core operators"
+core_namespace = "CORE"
 
 def KEY_SELECT(token):
     return lambda data, tkn=token: lambda_type(data, dict)[lambda_member(tkn, data)]
