@@ -158,3 +158,28 @@ def to_html(jsondata):
             if this_indent < above_indent:
                 html_array[idx] = above_indent*" " + tstring
     return "\n".join([x for x in html_array])
+
+
+
+def html_to_csv(tabletag):
+    assert_with_data(isinstance(jsondata, dict) or isinstance(
+        jsondata, list), jsondata, "wrongly formatted html json")
+    if isinstance(jsondata, list):
+        html_array = []
+        for item in jsondata:
+            html_array += make_tag(item)
+    elif isinstance(jsondata, dict):
+        html_array = make_tag(jsondata)
+    # fixes newlines without spaces following indents
+    # by respliutting the string by newline, and setting
+    # missing indents o the same indent as line above
+    html_array = "\n".join([x for x in html_array]).split("\n")
+    getspaces = lambda data: len(data)-len(data.lstrip())
+    for idx in range(1, len(html_array)):
+        tstring = html_array[idx].lstrip(" ")
+        if tstring[0] != "<":
+            above_indent = getspaces(html_array[idx-1])
+            this_indent = getspaces(html_array[idx])
+            if this_indent < above_indent:
+                html_array[idx] = above_indent*" " + tstring
+    return "\n".join([x for x in html_array])

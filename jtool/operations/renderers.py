@@ -7,14 +7,14 @@ import json
 import re
 
 
-@register_command("asjson")
+@register_command("tojson")
 def parse_into_json():
     '''convert data into json'''
     json2str = lambda data: json.dumps(data, indent=p_ind)
     return lambda dictdata: exception_wrapper(json2str, lambda_type(dictdata, list, dict), "could not convert data to json")
 
 
-@register_command("asjson_indent")
+@register_command("tojson_indent")
 def parse_into_json_indent(indent):
     '''convert data into json with indent specified in the argument'''
     try:
@@ -25,14 +25,14 @@ def parse_into_json_indent(indent):
     return lambda dictdata: exception_wrapper(json2str, lambda_type(dictdata, list, dict), "could not convert data to json")
 
 
-@register_command("ascompactjson")
+@register_command("tocompactjson")
 def parse_into_compact_json():
     '''convert data into json with no spaces'''
     json2str = lambda data: json.dumps(data, separators=(',', ":"))
     return lambda dictdata: exception_wrapper(json2str, lambda_type(dictdata, list, dict), "could not convert data to json")
 
 
-@register_command("asmarkup")
+@register_command("tomarkup")
 def parse_into_markup():
     '''convert data into markup format'''
     return lambda mjson: to_html(mjson)
@@ -43,7 +43,19 @@ def compact_markup(htmldata):
     return htmldata
 
 
-@register_command("ascompactmarkup")
+@register_command("tocompactmarkup")
 def parse_into_compact_markup():
     '''convert data into compatct-ish markup format'''
     return lambda mjson: compact_markup(to_html(mjson))
+
+@register_command("tomultiline")
+def parse_into_compact_markup():
+    '''convert array of strings into a text output with each item on newline'''
+    return lambda ldata: "\n".join(x for x in lambda_type(ldata, list))
+
+
+@register_command("tocsv")
+def parse_into_csv(delim):
+    '''convert array of array of strings into csv output with given delimeter'''
+    text_format = lambda text: str(text).replace("'", "\\\"").replace("\"", "\\\"")
+    return lambda ldata: "\n".join(delim.join(text_format(item) for item in lambda_type(line, list)) for line in lambda_type(ldata, list))

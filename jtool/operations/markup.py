@@ -75,8 +75,9 @@ def CHILDTAGS_OP():
 
 
 def get_attr_dict(attrstring):
-    # extra space will cause the attribute to process
-    # instead of handling non empty buffers at the end of the line
+    # extra space causes the last attribute to process 
+    # instead of needing handling logic for non empty buffer
+    # at the very end
     attrstring += " "
     keybuffer = []
     valbuffer = []

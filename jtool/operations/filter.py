@@ -10,17 +10,30 @@ def UNIQUE():
     '''selects unique values from list'''
     return lambda data: list(set(lambda_type(data, list)))
 
+
 @register_command("refilter")
 def RE_FILTER(filterspec):
     '''regexp filter with parameter (jtool_command=>regexp). 
-    converts input to string, runs the processing commands in jtool_command, 
-    and applies the regular expression filter regexp'''
+    converts input to string, runs the optional jtool command to narrow down selection
+    returns the input if the regular expression matches'''
     assert_with_data("=>" in filterspec, filterspec,
                      "regexp filter must be in fhe form of selector=>regular_expression")
     fsplit = filterspec.split("=>")
     selector = fsplit[0]
     restr = fsplit[1]
     return lambda data: data if re.search(restr, str(runprogram(data, selector) if selector else data)) else None
+
+
+def re_wrapper(regexp,data):
+    test = re.search(regexp, data)
+    if test:
+        return test.group()
+
+
+@register_command("refind")
+def RE_FIND(regexp):
+    '''returns the regular expression match for a given string'''
+    return lambda data: re_wrapper(regexp, lambda_type(data, str))
 
 
 @register_command("haskey")

@@ -11,6 +11,6 @@ setup(
     description='Tool for working with json data',
     long_description=open('README.md').read(),
     entry_points={
-        'console_scripts': ['jtool=jtool:run'],
+        'console_scripts': ['jtool=jtool.main:run'],
     }
 )
