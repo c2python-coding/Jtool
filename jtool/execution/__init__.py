@@ -1,4 +1,4 @@
-from . registry import get_operation_lambda
+from .registry import get_operation_lambda
 from jtool.utils.errorhandling import raise_error, assert_with_data
 from jtool.utils.debug import print_debug
 
