@@ -14,3 +14,10 @@ def SPLITLINES_OP(re_delimeter):
     re_delimeter = re_delimeter.strip("'\"")
     splitlambda = lambda data, tkn=re_delimeter: re.split(tkn, lambda_type(data, str))
     return lambda instring: exception_wrapper(splitlambda, instring, "error splitting by regular expression")
+
+
+@register_command("strip")
+def STRIP_OP():
+    '''removes leading/trailing spaces'''
+    striplambda = lambda data: lambda_type(data, str).strip()
+    return lambda instring: exception_wrapper(striplambda, instring, "error removing spaces")

@@ -62,11 +62,11 @@ def split_function_token(fulltoken):
 
 
 def get_operation_lambda(token, escaped=False):
-    is_iterator = False
+    is_iterator = 0
     if escaped:
-        return (CORE_COMMANDS[None](token), False)
-    if token[0] == "*":
-        is_iterator = True
+        return (CORE_COMMANDS[None](token), 0)
+    while token[0] == "*":
+        is_iterator += 1
         token = token[1:]
     if token[0] in CORE_COMMANDS:
         return (CORE_COMMANDS[token[0]](token), is_iterator)
