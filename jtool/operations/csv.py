@@ -9,7 +9,3 @@ def EXTRACT_COLUMN(col_name):
     col_name is column header on the first row of the csv file'''
     row_idx = lambda row, col: row.index(col) if col in row else raise_error(col, "column header not found")
     return lambda data: [row[row_idx(data[0], col_name)] for row in data][1:]
-
-
-
-
