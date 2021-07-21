@@ -45,7 +45,8 @@ def REMOVE_OP(string):
 @register_command("replace")
 def REPLACE_OP(string):
     '''replaces text, argument in the form of (searchtext,replacetext)
-    if comma character is desired to be searched or replaced, use %comma% in place'''
-    args = [x.replace("%comma%",",") for x in string.split(",")]
+    if comma character is desired to be searched or replaced, use %comma% in place
+    if parethesis characters are desired, use %pl% or %pr% for ( and ) respectively'''
+    args = [x.replace("%comma%",",").replace("%pl%","(").replace("%pr%",")") for x in string.split(",")]
     textlambda = lambda data, repspec=args:  lambda_type(data, str).replace(repspec[0],repspec[1])
     return lambda instring: exception_wrapper(textlambda, instring, "error replacing text")
