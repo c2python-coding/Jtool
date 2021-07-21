@@ -68,3 +68,5 @@ def make_KEYS_op(params): # function name not imporant
 The returning callable will be invoked in the chain of operations specified by the query string when encountered. 
 The data passed to the callable will be the current selection up to that operation. It is up to you to ensure that your custom
 operation plays nicely with others. 
+
+Happy usage!
