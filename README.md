@@ -70,3 +70,5 @@ The data passed to the callable will be the current selection up to that operati
 operation plays nicely with others. 
 
 Happy usage!
+
+
