@@ -59,7 +59,6 @@ To add the command `moo`, define a new function using the following format
 def make_KEYS_op(params): # function name not imporant
     '''description, as displayed when jtool -h is invoked'''
     #params is optional and will be a string that is between () in the command spec
-    parse_parameters(params)
     #the processing code here must define a callable (lambda or function)
     #that takes a valid input  and returns something
     return lambda data: {"mooable":data}
