@@ -1,4 +1,5 @@
 import sys
+import select
 import argparse
 from argparse import RawTextHelpFormatter
 from . import execution
@@ -74,7 +75,11 @@ def _script_entry():
         with open(args.filename, "r") as f:
             data = f.read()
     else:
-        data = sys.stdin.read()
+        if select.select([sys.stdin,],[],[],0.0)[0]:
+            data = sys.stdin.read()
+        else:
+            print("No stdin or --filname provided")
+
 
     if not data:
         return
