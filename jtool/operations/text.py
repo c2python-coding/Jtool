@@ -48,9 +48,9 @@ def REMOVE_OP(string):
 def REPLACE_OP(string):
     '''replaces text, argument in the form of (searchtext,replacetext), 
     where searchtext is a regular expression.
-    If comma character is desired to be searched or replaced, use %comma% in place
+    If comma character is desired to be searched or replaced, use %com% in place
     If parethesis characters are desired, use %pl% or %pr% for ( and ) respectively'''
-    args = [x.replace("%comma%",",").replace("%pl%","(").replace("%pr%",")") for x in string.split(",")]
+    args = [x.replace("%com%",",").replace("%pl%","(").replace("%pr%",")") for x in string.split(",")]
     print_debug("replace command special substitutions",args)
     assert_with_data(len(args)==2, string, "arguments must be in the form of (searchtext,replacetext)")
     validate_re(args[0])
