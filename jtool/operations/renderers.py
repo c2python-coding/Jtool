@@ -11,7 +11,7 @@ import re
 def parse_into_json():
     '''convert data into json'''
     json2str = lambda data: json.dumps(data, indent=p_ind)
-    return lambda dictdata: exception_wrapper(json2str, lambda_type(dictdata, list, dict), "could not convert data to json")
+    return lambda dictdata: exception_wrapper(json2str, lambda_type(dictdata, list, dict), "tojson")
 
 
 @register_command("tojson_indent")
@@ -22,14 +22,14 @@ def parse_into_json_indent(indent):
     except Exception:
         raise_error(indent, "not a valid indent, must be an integer")
     json2str = lambda data: json.dumps(data, indent=indentval)
-    return lambda dictdata: exception_wrapper(json2str, lambda_type(dictdata, list, dict), "could not convert data to json")
+    return lambda dictdata: exception_wrapper(json2str, lambda_type(dictdata, list, dict), "tojson_indent")
 
 
-@register_command("tocompactjson")
+@register_command("tocompact_json")
 def parse_into_compact_json():
     '''convert data into json with no spaces'''
     json2str = lambda data: json.dumps(data, separators=(',', ":"))
-    return lambda dictdata: exception_wrapper(json2str, lambda_type(dictdata, list, dict), "could not convert data to json")
+    return lambda dictdata: exception_wrapper(json2str, lambda_type(dictdata, list, dict), "tocompact_json")
 
 
 @register_command("tomarkup")

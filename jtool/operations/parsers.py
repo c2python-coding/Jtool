@@ -10,7 +10,7 @@ import json
 def PARSE_INTO_JSON():
     '''parsers data as json, into referensable structure with key:value pairs and array indexing'''
     str2json = lambda data: json.loads(data)
-    return lambda strdata: exception_wrapper(str2json, lambda_type(strdata, str), "could not parse input into json")
+    return lambda strdata: exception_wrapper(str2json, lambda_type(strdata, str),"json")
 
 
 @register_command("markup")

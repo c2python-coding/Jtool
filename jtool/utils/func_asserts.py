@@ -17,12 +17,12 @@ def lambda_member(item, collection):
     raise_error(collection, e_message)
 
 
-def exception_wrapper(lambdafun, data, errormsg):
+def exception_wrapper(lambdafun, data, tkn):
     try:
         val = lambdafun(data)
         return val
-    except Exception:
-        raise_error(data, errormsg)
+    except Exception as e:
+        raise_error(data, "@"+ tkn+ " "+str(e))
 
 
 def lambda_in_range(list, index):
