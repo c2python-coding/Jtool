@@ -14,7 +14,7 @@ class OperationToken:
             tkn = tkn.strip("'\"")
         (self.operation, self.itercount) = get_operation_lambda(tkn, tkn_escaped)
         assert_with_data(self.operation, tkn, "Unknown operation")
-        print_debug("Parsed token", tkn, "for operation", str(self.operation))
+        print_debug("Generated operation", str(self.operation), "for token", tkn)
 
 
 def parse_commands(tokenstr):

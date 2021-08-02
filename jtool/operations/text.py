@@ -1,5 +1,7 @@
 from jtool.execution.registry import register_command
+from jtool.utils.errorhandling import assert_with_data, validate_re
 from jtool.utils.func_asserts import lambda_type, exception_wrapper
+from jtool.utils.debug import print_debug
 import re
 
 @register_command("splitlines")
@@ -11,7 +13,7 @@ def SPLITLINES_OP():
 @register_command("resplit")
 def SPLITLINES_OP(re_delimeter):
     '''splits the string by a delimeter and returns an array'''
-    re_delimeter = re_delimeter.strip("'\"")
+    validate_re(re_delimeter)
     splitlambda = lambda data, tkn=re_delimeter: re.split(tkn, lambda_type(data, str))
     return lambda instring: exception_wrapper(splitlambda, instring, "error splitting by regular expression")
 
@@ -44,9 +46,13 @@ def REMOVE_OP(string):
 
 @register_command("replace")
 def REPLACE_OP(string):
-    '''replaces text, argument in the form of (searchtext,replacetext)
-    if comma character is desired to be searched or replaced, use %comma% in place
-    if parethesis characters are desired, use %pl% or %pr% for ( and ) respectively'''
+    '''replaces text, argument in the form of (searchtext,replacetext), 
+    where searchtext is a regular expression.
+    If comma character is desired to be searched or replaced, use %comma% in place
+    If parethesis characters are desired, use %pl% or %pr% for ( and ) respectively'''
     args = [x.replace("%comma%",",").replace("%pl%","(").replace("%pr%",")") for x in string.split(",")]
-    textlambda = lambda data, repspec=args:  lambda_type(data, str).replace(repspec[0],repspec[1])
+    print_debug("replace command special substitutions",args)
+    assert_with_data(len(args)==2, string, "arguments must be in the form of (searchtext,replacetext)")
+    validate_re(args[0])
+    textlambda = lambda data, repspec=args:  re.sub(repspec[0],repspec[1],lambda_type(data, str))
     return lambda instring: exception_wrapper(textlambda, instring, "error replacing text")

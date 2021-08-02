@@ -1,6 +1,6 @@
 from jtool.execution.registry import register_command
 from jtool.execution import runprogram
-from jtool.utils.errorhandling import assert_with_data
+from jtool.utils.errorhandling import assert_with_data, validate_re
 from jtool.utils.func_asserts import lambda_type
 import re
 
@@ -21,6 +21,7 @@ def RE_FILTER(filterspec):
     fsplit = filterspec.split("=>")
     selector = fsplit[0]
     restr = fsplit[1]
+    validate_re(restr)
     return lambda data: data if re.search(restr, str(runprogram(data, selector) if selector else data)) else None
 
 
