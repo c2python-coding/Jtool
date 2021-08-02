@@ -74,6 +74,6 @@ def runprogram(jsondata, parsestr):
     subval = jsondata
     while operations:
         next_task = operations.pop(0)
-        print_debug(f"Next operation token: {next_task.token}")
+        print_debug(f"Token: {next_task.token}, ", end = "")
         subval = iteration_wrapper(subval, next_task.itercount, next_task.operation)
     return subval

@@ -6,7 +6,7 @@ def enable_debug():
     DEBUG_ENABLED = True
 
 
-def print_debug(*args):
+def print_debug(*args,**vargs):
     global DEBUG_ENABLED
     if DEBUG_ENABLED:
-        print(*args)
+        print(*args,**vargs)
