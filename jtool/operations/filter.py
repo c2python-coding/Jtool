@@ -15,7 +15,7 @@ def UNIQUE():
 def RE_FILTER(filterspec):
     '''regexp filter with parameter (jtool_command=>regexp). 
     converts input to string, runs the optional jtool command to narrow down selection
-    returns the input if the regular expression matches'''
+    returns the input if the regular expression matches or None/null if it doesn't match'''
     assert_with_data("=>" in filterspec, filterspec,
                      "regexp filter must be in fhe form of selector=>regular_expression")
     fsplit = filterspec.split("=>")
@@ -23,7 +23,6 @@ def RE_FILTER(filterspec):
     restr = fsplit[1]
     validate_re(restr)
     return lambda data: data if re.search(restr, str(runprogram(data, selector) if selector else data)) else None
-
 
 def re_wrapper(regexp,data):
     test = re.search(regexp, data)

@@ -75,10 +75,7 @@ def _script_entry():
         with open(args.filename, "r") as f:
             data = f.read()
     else:
-        if select.select([sys.stdin,],[],[],0.0)[0]:
-            data = sys.stdin.read()
-        else:
-            print("No stdin or --filname provided")
+        data = sys.stdin.read()
 
 
     if not data:
