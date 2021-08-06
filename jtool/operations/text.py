@@ -27,7 +27,7 @@ def STRIP_OP():
 
 @register_command("prepend")
 def PREPEND_OP(string):
-    '''add text to beggining'''
+    '''add text to beginning'''
     textlambda = lambda data, txt=string: txt + lambda_type(data, str)
     return lambda instring: exception_wrapper(textlambda, instring, "prepend")
 
@@ -45,14 +45,8 @@ def REMOVE_OP(string):
     return lambda instring: exception_wrapper(textlambda, instring, "remove")
 
 @register_command("replace")
-def REPLACE_OP(string):
-    '''replaces text, argument in the form of (searchtext,replacetext), 
-    where searchtext is a regular expression.
-    If comma character is desired to be searched or replaced, use %com% in place
-    If parethesis characters are desired, use %pl% or %pr% for ( and ) respectively'''
-    args = [x.replace("%com%",",").replace("%pl%","(").replace("%pr%",")") for x in string.split(",")]
-    print_debug("replace command special substitutions",args)
-    assert_with_data(len(args)==2, string, "arguments must be in the form of (searchtext,replacetext)")
-    validate_re(args[0])
-    textlambda = lambda data, repspec=args:  re.sub(repspec[0],repspec[1],lambda_type(data, str))
+def REPLACE_OP(regexp,replace):
+    '''searches text on the provided regular expressions and replaces every occurence'''
+    validate_re(regexp)
+    textlambda = lambda data, repspec=[regexp,replace]: re.sub(repspec[0],repspec[1],lambda_type(data, str))
     return lambda instring: exception_wrapper(textlambda, instring, "replace")

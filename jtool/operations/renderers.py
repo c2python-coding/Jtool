@@ -9,14 +9,15 @@ import re
 
 @register_command("tojson")
 def parse_into_json():
-    '''convert data into json'''
+    '''convert json data into formatted json output
+    This is generally needed for json as default string output uses single quotes'''
     json2str = lambda data: json.dumps(data, indent=p_ind)
     return lambda dictdata: exception_wrapper(json2str, lambda_type(dictdata, list, dict), "tojson")
 
 
 @register_command("tojson_indent")
 def parse_into_json_indent(indent):
-    '''convert data into json with indent specified in the argument'''
+    '''convert json data into formatted json with indent specified in the argument'''
     try:
         indentval = int(indent)
     except Exception:
@@ -27,14 +28,14 @@ def parse_into_json_indent(indent):
 
 @register_command("tocompact_json")
 def parse_into_compact_json():
-    '''convert data into json with no spaces'''
+    '''convert json data into json with no spaces'''
     json2str = lambda data: json.dumps(data, separators=(',', ":"))
     return lambda dictdata: exception_wrapper(json2str, lambda_type(dictdata, list, dict), "tocompact_json")
 
 
 @register_command("tomarkup")
 def parse_into_markup():
-    '''convert data into markup format'''
+    '''convert markup specific json data into markup format'''
     return lambda mjson: to_html(mjson)
 
 def compact_markup(htmldata):
@@ -45,7 +46,7 @@ def compact_markup(htmldata):
 
 @register_command("tocompactmarkup")
 def parse_into_compact_markup():
-    '''convert data into compatct-ish markup format'''
+    '''convert markup specific json data into compatct-ish markup format'''
     return lambda mjson: compact_markup(to_html(mjson))
 
 @register_command("tomultiline")

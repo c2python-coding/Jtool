@@ -25,7 +25,7 @@ def exception_wrapper(lambdafun, data, tkn):
         raise_error(data, "@"+ tkn+ " "+str(e))
 
 
-def lambda_in_range(list, index):
-    if index >= 0 and index <= len(list):
+def lambda_in_range(item, index):
+    if index >= 0 and index <= len(item):
         return index
-    raise_error(index, "Index out of range")
+    raise_error(item, f"Index  out of range: {index}")

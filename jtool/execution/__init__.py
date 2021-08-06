@@ -1,7 +1,7 @@
 from .registry import get_operation_lambda
 from jtool.utils.errorhandling import raise_error, assert_with_data
 from jtool.utils.debug import print_debug
-
+from jtool.utils.text_utils import q_chars,skip_quotes,match_bracket
 
 class OperationToken:
 
@@ -14,35 +14,32 @@ class OperationToken:
             tkn = tkn.strip("'\"")
         (self.operation, self.itercount) = get_operation_lambda(tkn, tkn_escaped)
         assert_with_data(self.operation, tkn, "Unknown operation")
-        print_debug("Generated operation", str(self.operation), "for token", tkn)
+        print_debug("Registed operation", str(self.operation), "for token", tkn)
 
 
 def parse_commands(tokenstr):
     command_list = []
     print_debug("received command string:", tokenstr)
-    assert tokenstr[0] != ".", "selection specifier can't start with ."
+    if tokenstr[0] == ".":
+        print_debug("Removing starting .")
+        tokenstr=tokenstr[1:]
     idx = 0
     buffer = ""
-    groupchar = None
     while idx < len(tokenstr):
-        if groupchar:
-            if tokenstr[idx] == groupchar:
-                groupchar = None
-            buffer += tokenstr[idx]
+        if tokenstr[idx] == ".":
+            command_list.append(OperationToken(buffer))
+            buffer = ""
+        elif tokenstr[idx] in q_chars:
+            eidx = skip_quotes(tokenstr,idx)
+            buffer += tokenstr[idx:eidx+1]
+            idx = eidx
+        elif tokenstr[idx] == "(":
+            eidx = match_bracket(tokenstr,idx)
+            buffer+=tokenstr[idx:eidx+1]
+            idx = eidx
         else:
-            if tokenstr[idx] == ".":
-                command_list.append(OperationToken(buffer))
-                buffer = ""
-            else:
-                # escapes the stuff in quotes as one singular entry.
-                if tokenstr[idx] in ["'", "\""]:
-                    groupchar = tokenstr[idx]
-                elif tokenstr[idx] == "(":
-                    groupchar = ")"
-                buffer += tokenstr[idx]
+            buffer += tokenstr[idx]
         idx += 1
-    if groupchar:
-        raise_error(tokenstr, "mismatched parenthesis")
     if buffer:
         command_list.append(OperationToken(buffer))
     return command_list

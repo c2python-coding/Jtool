@@ -1,5 +1,7 @@
 from jtool.utils.errorhandling import raise_error, assert_with_data
 from jtool.utils.debug import print_debug
+from jtool.utils.text_utils import skip_quotes, q_chars
+from inspect import signature
 
 CUSTOM_COMMANDS = {}
 COMMAND_HELP_LIST = {}
@@ -26,11 +28,14 @@ def register_command(opname):
 
     def identity_dec(func, operation=opname):
         namespace = func.__module__.split(".")[-1].upper()
-        CUSTOM_COMMANDS[operation] = func
         if func.__code__.co_argcount > 0:
-            pstring = "("+func.__code__.co_varnames[0]+")"
+            paramlist = [x for x in signature(func).parameters]
+            nparams = len(paramlist)
+            pstring = f"({','.join(paramlist)})"
         else:
+            nparams = 0
             pstring = ""
+        CUSTOM_COMMANDS[operation] = (func,nparams)
         assert_with_data(func.__doc__, str(func),
                          "no description defined for custom function")
         append_help_item(namespace, "@" + opname +
@@ -38,6 +43,29 @@ def register_command(opname):
         return func
     return identity_dec
 
+    
+
+def param_processor(paramstring):
+    idx = 0
+    params = tuple()
+    buffer = ""
+    while idx < len(paramstring):
+        tchar = paramstring[idx]
+        if tchar in q_chars:
+            eidx = skip_quotes(paramstring,idx)
+            buffer += paramstring[idx+1:eidx]
+            idx = eidx
+        elif tchar == ",":
+            if buffer:
+                params += (buffer,)
+            buffer = ""
+        else:
+            buffer += tchar
+        idx+=1
+    if buffer:
+        params += (buffer,)
+    return params
+        
 
 def split_function_token(fulltoken):
     assert_with_data(fulltoken[0] == "@", fulltoken,
@@ -46,18 +74,14 @@ def split_function_token(fulltoken):
         fulltoken = fulltoken[:-1]
         splitstr = fulltoken.split("(")
         tknname = splitstr[0][1:]
-        tknparams = splitstr[1]
+        tknparams = param_processor(splitstr[1])
     else:
         tknname = fulltoken[1:]
-        tknparams = None
+        tknparams = tuple()
     paramdebug = ""
     if tknparams:
-        paramdebug = " with parameters("+tknparams+")"
-        if "\\n" in tknparams or "\\t" in tknparams:
-            tknparams = tknparams.replace("\\n", "\n").replace("\\t", "\t")
-            print_debug(
-                "Replacing \\n and \\t characters  in parameters with newline/tab")
-    print_debug("Found command", tknname + paramdebug)
+        paramdebug = f" with parameters({','.join(tknparams)})"
+    print_debug("Parsed command", tknname + paramdebug)
     return(tknname, tknparams)
 
 
@@ -74,9 +98,11 @@ def get_operation_lambda(token, escaped=False):
         if token[0] == "@":
             (tknname, params) = split_function_token(token)
             if tknname in CUSTOM_COMMANDS:
+                funobj = CUSTOM_COMMANDS[tknname][0]
+                nparams = CUSTOM_COMMANDS[tknname][1]
+                assert_with_data(nparams == len(params),token, f"incorrect number of parameters to @{tknname}, expecting {nparams}")
                 try:
-                    t_callable = CUSTOM_COMMANDS[tknname](
-                        params) if params else CUSTOM_COMMANDS[tknname]()
+                    t_callable = funobj(*params) if params else funobj()
                 except TypeError as e:
                     raise_error(token, str(
                         e)+", in operation generator function")
@@ -88,3 +114,6 @@ def get_operation_lambda(token, escaped=False):
                     token, "not a valid command (if you are trying to reference a key, escape it with ' or \" )")
         else:
             return (CORE_COMMANDS[None](token), is_iterator)
+
+
+    

@@ -58,7 +58,8 @@ To add the command `moo`, define a new function using the following format
 @register_command("moo")  # required to register command
 def make_KEYS_op(params): # function name not imporant
     '''description, as displayed when jtool -h is invoked'''
-    #params is optional and will be a string that is between () in the command spec
+    #params is optional and will be an array corresponding to comma
+    # sepearated params that is between () in the cli line argument "@moo(...)"
     #the processing code here must define a callable (lambda or function)
     #that takes a valid input  and returns something
     return lambda data: {"mooable":data}

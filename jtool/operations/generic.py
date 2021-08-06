@@ -13,3 +13,14 @@ def TYPE_OP():
     '''returns type of data'''
     return lambda data: canoncial_type_names[type(data)]
 
+
+@register_command("delete")
+def DELETE_OP(val):
+    '''removes a entry from json by key'''
+    return lambda data: data
+
+
+@register_command("transform")
+def DELETE_OP(val):
+    '''removes a entry from json by key'''
+    return lambda data: data

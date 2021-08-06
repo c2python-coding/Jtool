@@ -1,7 +1,7 @@
 from jtool.execution.registry import register_command
 from jtool.utils.errorhandling import raise_error
 from jtool.utils.markup_utils import TAG_KEY, INNER_KEY, SPECIAL_HTML_KEYS
-
+from jtool.utils.text_utils import q_chars, skip_quotes
 
 def lambda_istag(tag):
     if isinstance(tag, dict) and TAG_KEY in tag:
@@ -83,32 +83,26 @@ def get_attr_dict(attrstring):
     valbuffer = []
     accumulator = {}
     target = keybuffer
-    match = None
     idx = 0
     while idx < len(attrstring):
-        if match:
-            if attrstring[idx] == match:
-                match = None
+        if attrstring[idx] in q_chars:
+            eidx=skip_quotes(attrstring,idx)
+            target.append(attrstring[idx+1:eidx])
+            idx=eidx
+        elif attrstring[idx] == "=":
+            target = valbuffer
+        elif attrstring[idx] == " ":
+            if target is keybuffer:
+                # handles attributes without an = value
+                accumulator["".join(keybuffer)] = None
+                keybuffer.clear()
             else:
-                target.append(attrstring[idx])
+                accumulator["".join(keybuffer)] = "".join(valbuffer)
+                keybuffer.clear()
+                valbuffer.clear()
+                target = keybuffer
         else:
-            # escape stuff in quotes as one single entry
-            if attrstring[idx] in ["'", "\""]:
-                match = attrstring[idx]
-            elif attrstring[idx] == "=":
-                target = valbuffer
-            elif attrstring[idx] == " ":
-                if target is keybuffer:
-                    # handles attributes without an = value
-                    accumulator["".join(keybuffer)] = None
-                    keybuffer.clear()
-                else:
-                    accumulator["".join(keybuffer)] = "".join(valbuffer)
-                    keybuffer.clear()
-                    valbuffer.clear()
-                    target = keybuffer
-            else:
-                target.append(attrstring[idx])
+            target.append(attrstring[idx])
         idx += 1
     if keybuffer or valbuffer:
         raise_error(attrstring, "wrongly formatted attribute spec")

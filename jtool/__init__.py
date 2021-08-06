@@ -14,8 +14,13 @@ _INITIAL_HELP_STR = """A tool for processing json/html/xml/csv/text data.
 
 Processing is accomplished by specifying a chain of commands separated by (.), where each
 command takes the input produced by the previous command and sends the output to the next
-command. For special characters in selectors or expressions, you can use single/double
-quotes to avoid interpretation as a command
+command. 
+
+Some commands take an 1 or 2 arguments, separated by commas. If you want to use comma, 
+or parenthesis chars in the actual arguments, make sure to single/double quote each argument.
+Likeiwse any command that is quoted is going to be interpreted as a key selector. Note that spaces
+are interpreted literally in arguments and are not removed. 
+
 
 The input data by default is parsed as text string
 The parser commands force a specific parser to be applied to data, such as json, csv, etc

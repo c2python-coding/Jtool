@@ -5,14 +5,27 @@ import re
 
 core_namespace = "CORE"
 
+# --------------------
+IDENTITY_OPERATOR = "~"
+
+def KEY_IDENTITY(token):
+    return lambda data: data
+
+append_help_item(core_namespace, IDENTITY_OPERATOR + " : identity operator, returns data without modifying it")
+
+CORE_COMMANDS[IDENTITY_OPERATOR] = KEY_IDENTITY
+
+# --------------------
+
 def KEY_SELECT(token):
     return lambda data, tkn=token: lambda_type(data, dict)[lambda_member(tkn, data)]
 
-append_help_item(core_namespace, "key : returns the value for particular key")
+append_help_item(core_namespace, "keystr : returns the value for particular key in jston specified by provided keystr")
 
 CORE_COMMANDS[None] = KEY_SELECT
 
 # --------------------
+
 MULTI_KEY_OPERATOR = "{}"
 
 
@@ -51,19 +64,19 @@ def ARRAY_SELECT(token):
             raise_error(token, "invalid array selection specifier")
     if len(indicies) == 1:
         tidx = indicies[0]
-        return lambda data: lambda_type(data, list)[lambda_in_range(data, tidx)]
+        return lambda data: lambda_type(data, list, str)[lambda_in_range(data, tidx)]
     else:
-        return lambda data: [lambda_type(data, list)[lambda_in_range(data, i)] for i in indicies]
+        return lambda data: [lambda_type(data, list, str)[lambda_in_range(data, i)] for i in indicies]
 
 
 CORE_COMMANDS[ARRAY_OPERATOR[0]
                  ] = ARRAY_SELECT
-append_help_item(core_namespace, ARRAY_OPERATOR + " : selects range or particular indicies of arrays [0,1,2-4,...]")
+append_help_item(core_namespace, ARRAY_OPERATOR + " : selects range or particular indicies of arrays or strings [0,1,2-4,...]")
 
 # -------------------------
 
 ITER_OPERATOR = "*"
 
-append_help_item(core_namespace, ITER_OPERATOR + " : prepend to command to apply iteravely on an array or each key:value pair")
+append_help_item(core_namespace, ITER_OPERATOR + " : prepend any number of times to command to apply iteravely elements or key:value pair")
 
 # --------------------

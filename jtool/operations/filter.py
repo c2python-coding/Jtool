@@ -1,6 +1,6 @@
 from jtool.execution.registry import register_command
 from jtool.execution import runprogram
-from jtool.utils.errorhandling import assert_with_data, validate_re
+from jtool.utils.errorhandling import validate_re
 from jtool.utils.func_asserts import lambda_type
 import re
 
@@ -12,23 +12,21 @@ def UNIQUE():
 
 
 @register_command("refilter")
-def RE_FILTER(filterspec):
-    '''regexp filter with parameter (jtool_command=>regexp). 
-    converts input to string, runs the optional jtool command to narrow down selection
-    returns the input if the regular expression matches or None/null if it doesn't match'''
-    assert_with_data("=>" in filterspec, filterspec,
-                     "regexp filter must be in fhe form of selector=>regular_expression")
-    fsplit = filterspec.split("=>")
-    selector = fsplit[0]
-    restr = fsplit[1]
-    validate_re(restr)
-    return lambda data: data if re.search(restr, str(runprogram(data, selector) if selector else data)) else None
+def RE_FILTER(selector,regexp):
+    '''filters a subselection 
+    The selector argument is a valid jtool selection command, while the regexp is the filter
+    To filture current argument without selection, use (~,regexp) as arguments
+    Note that the selector command applies the same format of data as in the output from
+    the previous opreation, i.e no parser application is necessary
+    '''
+    validate_re(regexp)
+    return lambda data: data if re.search(regexp, str(runprogram(data, selector) if selector else data)) else None
+
 
 def re_wrapper(regexp,data):
     test = re.search(regexp, data)
     if test:
         return test.group()
-
 
 @register_command("refind")
 def RE_FIND(regexp):
