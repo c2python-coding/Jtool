@@ -1,6 +1,7 @@
 from jtool.execution.registry import append_help_item, CORE_COMMANDS
 from jtool.utils.errorhandling import assert_with_data, raise_error
 from jtool.utils.func_asserts import lambda_member, lambda_type, lambda_in_range
+from jtool.utils.text_utils import split_ranges
 import re
 
 core_namespace = "CORE"
@@ -49,24 +50,12 @@ def ARRAY_SELECT(token):
     assert_with_data(re.search(r"\[[0-9,-]+\]", token), token,
                      "range specifier must be in form [0,1,2-3...]")
     rangestring = token.strip("[]")
-    indicies = []
-    crange = rangestring.split(",")
-    for elem in crange:
-        try:
-            if "-" in elem:
-                rangevals = elem.split("-")
-                lval = int(rangevals[0].strip())
-                rval = int(rangevals[1].strip())
-                indicies += list(range(lval, rval+1))
-            else:
-                indicies.append(int(elem.strip()))
-        except Exception:
-            raise_error(token, "invalid array selection specifier")
+    indicies = split_ranges(rangestring)
     if len(indicies) == 1:
         tidx = indicies[0]
-        return lambda data: lambda_type(data, list, str)[lambda_in_range(data, tidx)]
+        return lambda data: lambda_type(data, list, str)[lambda_in_range(tidx, data)]
     else:
-        return lambda data: [lambda_type(data, list, str)[lambda_in_range(data, i)] for i in indicies]
+        return lambda data: [lambda_type(data, list, str)[lambda_in_range(i, data)] for i in indicies]
 
 
 CORE_COMMANDS[ARRAY_OPERATOR[0]

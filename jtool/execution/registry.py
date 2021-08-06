@@ -28,7 +28,7 @@ def register_command(opname):
 
     def identity_dec(func, operation=opname):
         namespace = func.__module__.split(".")[-1].upper()
-        if func.__code__.co_argcount > 0:
+        if len(signature(func).parameters) > 0:
             paramlist = [x for x in signature(func).parameters]
             nparams = len(paramlist)
             pstring = f"({','.join(paramlist)})"

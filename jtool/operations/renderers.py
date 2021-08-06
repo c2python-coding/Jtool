@@ -8,7 +8,7 @@ import re
 
 
 @register_command("tojson")
-def parse_into_json():
+def RENDER_JSON():
     '''convert json data into formatted json output
     This is generally needed for json as default string output uses single quotes'''
     json2str = lambda data: json.dumps(data, indent=p_ind)
@@ -16,7 +16,7 @@ def parse_into_json():
 
 
 @register_command("tojson_indent")
-def parse_into_json_indent(indent):
+def RENDER_JSON_INDENT(indent):
     '''convert json data into formatted json with indent specified in the argument'''
     try:
         indentval = int(indent)
@@ -27,7 +27,7 @@ def parse_into_json_indent(indent):
 
 
 @register_command("tocompact_json")
-def parse_into_compact_json():
+def RENDER_COMPACT_JSON():
     '''convert json data into json with no spaces'''
     json2str = lambda data: json.dumps(data, separators=(',', ":"))
     return lambda dictdata: exception_wrapper(json2str, lambda_type(dictdata, list, dict), "tocompact_json")
@@ -45,18 +45,24 @@ def compact_markup(htmldata):
 
 
 @register_command("tocompactmarkup")
-def parse_into_compact_markup():
+def RENDER_COMPACT_MARKUP():
     '''convert markup specific json data into compatct-ish markup format'''
     return lambda mjson: compact_markup(to_html(mjson))
 
 @register_command("tomultiline")
-def parse_into_compact_markup():
+def RENDER_MULTILINE():
     '''convert array of strings into a text output with each item on newline'''
     return lambda ldata: "\n".join(x for x in lambda_type(ldata, list))
 
 
 @register_command("tocsv")
-def parse_into_csv(delim):
-    '''convert array of array of strings into csv output with given delimeter'''
+def RENDER_CSV(delim):
+    '''converts arrays or nested arrays into csv output with given delimeter'''
     text_format = lambda text: str(text).replace("'", "\\\"").replace("\"", "\\\"")
-    return lambda ldata: "\n".join(delim.join(text_format(item) for item in lambda_type(line, list)) for line in lambda_type(ldata, list))
+    dimupsize = lambda ldata: ldata if isinstance(lambda_type(ldata, list)[0],list) else [ldata]
+    return lambda ldata: "\n".join(delim.join(text_format(item) for item in lambda_type(line, list)) for line in dimupsize(ldata))
+
+@register_command("to text")
+def RENDER_TEXT():
+    '''converts any data to string, usefull for rendering json or lists to text'''
+    return lambda data: str(data)

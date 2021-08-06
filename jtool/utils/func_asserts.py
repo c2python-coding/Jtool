@@ -22,10 +22,10 @@ def exception_wrapper(lambdafun, data, tkn):
         val = lambdafun(data)
         return val
     except Exception as e:
-        raise_error(data, "@"+ tkn+ " "+str(e))
+        raise_error(data, "@"+ tkn+ ": "+str(e))
 
 
-def lambda_in_range(item, index):
+def lambda_in_range(index,item):
     if index >= 0 and index <= len(item):
         return index
     raise_error(item, f"Index  out of range: {index}")

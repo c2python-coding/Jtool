@@ -16,7 +16,7 @@ def FLATTEN_OP():
 @register_command("concat")
 def CONCAT_OP(delimeter):
     '''combines array of items into a string with string representations of each item and a given delimeter'''
-    return lambda data: delimeter.join([x for x in lambda_type(data, list)])
+    return lambda data: delimeter.join([str(x) for x in lambda_type(data, list)])
 
 @register_command("clean")
 def CLEAN_OP():

@@ -1,6 +1,6 @@
 from jtool.execution.registry import register_command
 from jtool.execution import runprogram
-from jtool.utils.errorhandling import validate_re
+from jtool.utils.text_utils import validate_re
 from jtool.utils.func_asserts import lambda_type
 import re
 
@@ -31,6 +31,7 @@ def re_wrapper(regexp,data):
 @register_command("refind")
 def RE_FIND(regexp):
     '''returns the regular expression match for a given string'''
+    validate_re(regexp)
     return lambda data: re_wrapper(regexp, lambda_type(data, str))
 
 

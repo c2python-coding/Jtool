@@ -1,10 +1,33 @@
 from .errorhandling import raise_error
-from .debug import print_debug
+import re
+
 
 br_open = ["[","{","("]
 br_close = ["]","}",")"]
 q_chars = ["\"","'"]
 
+
+def split_ranges(rangestring):
+    crange = rangestring.split(" ")
+    indicies = []
+    for elem in crange:
+        try:
+            if "-" in elem:
+                rangevals = elem.split("-")
+                lval = int(rangevals[0].strip())
+                rval = int(rangevals[1].strip())
+                indicies += list(range(lval, rval+1))
+            else:
+                indicies.append(int(elem.strip()))
+        except Exception:
+            raise_error(rangestring, "invalid array selection specifier")
+    return indicies
+
+def validate_re(re_expression):
+    try:
+        re.compile(re_expression)
+    except re.error as e:
+        raise_error(re_expression, str(e))
 
 def skip_quotes(data,index):
     tchar = data[index]
