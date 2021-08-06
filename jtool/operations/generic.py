@@ -16,11 +16,11 @@ def TYPE_OP():
 
 @register_command("delete")
 def DELETE_OP(val):
-    '''removes a entry from json by key'''
+    '''TODO'''
     return lambda data: data
 
 
 @register_command("transform")
-def DELETE_OP(val):
-    '''removes a entry from json by key'''
+def TRANSFORM_OP(val):
+    '''TODO'''
     return lambda data: data
