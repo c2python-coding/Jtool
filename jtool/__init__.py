@@ -34,16 +34,20 @@ The following are valid commands. Some take arguments passed in ().
 
 """
 
-def build_operations(commandstr):
+
+def build_ops(commandstr):
     return execution.parse_commands(commandstr)
+
+
+def run_ops(content, operations):
+    return execution.runprogram(content, operations)
 
 
 def process(content, commandstr, debug=False):
     if (debug):
         enable_debug()
-    operations = build_operations(commandstr)
+    operations = execution.parse_commands(commandstr)
     return execution.runprogram(content, operations)
-
 
 
 def _build_help_str(namespace):
