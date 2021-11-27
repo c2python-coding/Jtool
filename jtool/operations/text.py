@@ -1,6 +1,7 @@
 from jtool.execution.registry import register_command
 from jtool.utils.text_utils import validate_re
 from jtool.utils.func_asserts import lambda_type, exception_wrapper
+import re
 
 @register_command("splitlines")
 def SPLITLINES_OP():
@@ -15,9 +16,10 @@ def SPLITRE_OP(re_delimeter):
     splitlambda = lambda data, tkn=re_delimeter: re.split(tkn, lambda_type(data, str))
     return lambda instring: exception_wrapper(splitlambda, instring, "resplit")
 
+
 @register_command("charsplit")
 def CHARSPLIT_OP():
-    '''splits a string by characters'''
+    '''makes a string into a list of characters'''
     makelist = lambda text: list(lambda_type(text,str))
     return lambda text: exception_wrapper(makelist,text,"charsplit")
 

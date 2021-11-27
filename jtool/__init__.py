@@ -34,11 +34,15 @@ The following are valid commands. Some take arguments passed in ().
 
 """
 
+def build_operations(commandstr):
+    return execution.parse_commands(commandstr)
 
-def parse(content, commandstr, debug=False):
+
+def process(content, commandstr, debug=False):
     if (debug):
         enable_debug()
-    return execution.runprogram(content, commandstr)
+    operations = build_operations(commandstr)
+    return execution.runprogram(content, operations)
 
 
 
@@ -59,7 +63,7 @@ for _namespace in execution.registry.COMMAND_HELP_LIST:
     if _namespace not in _first_help_items:
         _full_help_str += _build_help_str(_namespace)
 
-parse.__doc__=_full_help_str
+process.__doc__=_full_help_str
 
 
 def _script_entry():
@@ -89,4 +93,4 @@ def _script_entry():
     if not args.commandstr:
         print(data)
     else:
-        print(parse(data, args.commandstr, args.debug))
+        print(process(data, args.commandstr, args.debug))

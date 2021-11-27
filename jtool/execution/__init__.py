@@ -66,8 +66,8 @@ def iteration_wrapper(data, level, operation):
         raise_error(data, "Cant apply iterator on list or string")
 
 
-def runprogram(jsondata, parsestr):
-    operations = parse_commands(parsestr)
+
+def runprogram(jsondata, operations):
     subval = jsondata
     while operations:
         next_task = operations.pop(0)
